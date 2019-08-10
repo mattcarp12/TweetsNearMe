@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">TweetsNearMe</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="location_permission_not_available">Permission is not available. Requesting location permission.</string>
+    <string name="location_permission_available">Location permission is available. Getting location.</string>
+    <string name="location_permission_granted">Location permission was granted. Getting location.</string>
+    <string name="location_permission_denied">Location permission request was denied.</string>
+    <string name="location_access_required">Location access is required to get your location.</string>
+    <string name="ok">OK</string>
+    <string name="location_unavailable"><b>Location could not be opened.</b>\nThis occurs when the location is not available (for example it is already in use) or if the system has denied access (for example when location access has been disabled).</string>
+
+</resources>
