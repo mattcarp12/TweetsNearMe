@@ -1,12 +1,18 @@
 package org.matt.tweetsnearme;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import android.os.Bundle;
 import android.Manifest;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -16,23 +22,20 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    private static final String TAG = MapsActivity.class.getSimpleName();
     private GoogleMap mMap;
-    private FusedLocationProviderClient fusedLocationClient;
+    private boolean mLocationPermissionGranted;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        getLocationPermission();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-        mapFragment.getMapAsync(this);
-
-
-
+        mapFragment.getMapAsync(MapsActivity.this);
     }
 
 
@@ -51,7 +54,61 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng tampa = new LatLng(27.94752, -82.45843);// 27.9506° N, 82.4572° W
+        mMap.addMarker(new MarkerOptions().position(tampa).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(tampa));
+    }
+
+    public void getLocationPermission() {
+        mLocationPermissionGranted = false;
+        if (ContextCompat.checkSelfPermission(MapsActivity.this.getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+            Log.d(TAG, "permission already given");
+        } else {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MapsActivity.this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                Log.d(TAG, "permission previously denied, requesting permission");
+                new AlertDialog.Builder(this)
+                        .setTitle("Request location permission")
+                        .setMessage("Location permission is required to retreive tweets near you!")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(MapsActivity.this,
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                            }
+                        })
+                        .create()
+                        .show();
+            } else {
+                ActivityCompat.requestPermissions(MapsActivity.this,
+                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                        PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                Log.d(TAG, "permission not previously denied, requesting permission");
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch(requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Location permission granted.", Toast.LENGTH_SHORT).show();
+                    mLocationPermissionGranted = true;
+                    Log.d(TAG, "Permission request granted.");
+                } else {
+                    Toast.makeText(this, "Location permission denied.", Toast.LENGTH_SHORT).show();
+                    mLocationPermissionGranted = false;
+                    Log.d(TAG, "Permission request denied.");
+                }
+            }
+        }
+
     }
 }
