@@ -10,6 +10,7 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -24,6 +25,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import org.json.JSONObject;
+import org.matt.tweetsnearme.Utilities.TweetUtility;
+
+import java.net.URL;
+
+import twitter4j.JSONArray;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private static final String TAG = MapsActivity.class.getSimpleName();
@@ -33,6 +41,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location mLocation;
     private LatLng mLatLng;
     private FusedLocationProviderClient fusedLocationClient;
+    private TweetUtility tweetUtility;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +53,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(MapsActivity.this);
+        tweetUtility = new TweetUtility(this);
     }
 
 
@@ -128,12 +138,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getCurrentLocation();
     }
 
-    public void getAndShowTweetsNearMe() {
-        getCurrentLocation();
-        getTweets();
-        showTweets();
-    }
-
 
     private void getCurrentLocation() {
         if (mLocationPermissionGranted) {
@@ -149,6 +153,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     Log.d(TAG, "Location retreval successful.");
                                     mLocation = location;
                                     updateMapWithLocation();
+                                } else {
+                                    Log.d(TAG, "Last known location is null, setting to default");
+                                    setDefaultLocation();
                                 }
                             }
                         });
@@ -156,14 +163,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.d("EXCEPTION: ",  e.getMessage());
             }
         } else {
-            Log.d(TAG, "Setting location to default, Googleplex");
-            mLocation = new Location("");
-            mLocation.setLatitude(37.422);
-            mLocation.setLongitude(-122.084);
-            updateMapWithLocation();
+            setDefaultLocation();
         }
 
 
+    }
+
+    private void setDefaultLocation() {
+        Log.d(TAG, "Setting location to default, Googleplex");
+        mLocation = new Location("");
+        mLocation.setLatitude(37.422);
+        mLocation.setLongitude(-122.084);
+        updateMapWithLocation();
     }
 
     private void updateMapWithLocation() {
@@ -171,16 +182,49 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(mLatLng).title(mLatLng.latitude + ", " + mLatLng.longitude));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(mLatLng));
 
-        // get tweets
-        getTweets();
-        // show radius of 1 mile where tweets will be located
-    }
 
-    private void getTweets() {
+        // TODO: show radius of 1 mile where tweets will be located
 
-    }
+        // Once initial location has been set, make call to get tweets
+        new TwitterQueryTask().execute(mLatLng);
 
-    private void showTweets() {
 
     }
+
+
+    public class TwitterQueryTask extends AsyncTask<LatLng, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            // TODO: Set loading indicator to visible
+
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            // TODO: As soon as loading is complete, hide the loading indicator
+
+            // TODO: If query results are valid, show markers on map
+            new AlertDialog.Builder(MapsActivity.this)
+                    .setTitle("Your first tweet, Sir.")
+                    .setMessage(s)
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            // do nothing
+                        }
+                    })
+                    .create()
+                    .show();
+        }
+
+        @Override
+        protected String doInBackground(LatLng... mLatLng) {
+            return tweetUtility.tweetQuery(mLatLng[0]);
+        }
+    }
+
 }

@@ -11,6 +11,10 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "google_maps_key", (project.findProperty("GOOGLE_MAPS_API_KEY") ?: "")
+        resValue "string", "twitter_api_consumer_key", (project.findProperty("TWITTER_API_CONSUMER_KEY") ?: "")
+        resValue "string", "twitter_api_consumer_secret_key", (project.findProperty("TWITTER_API_CONSUMER_SECRET_KEY") ?: "")
+        resValue "string", "twitter_api_access_token", (project.findProperty("TWITTER_API_ACCESS_TOKEN") ?: "")
+        resValue "string", "twitter_api_access_token_secret", (project.findProperty("TWITTER_API_ACCESS_TOKEN_SECRET") ?: "")
     }
     buildTypes {
         release {
