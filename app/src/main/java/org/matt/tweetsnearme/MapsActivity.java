@@ -14,12 +14,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -27,14 +30,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private boolean mLocationPermissionGranted;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    private Location location;
+    private Location mLocation;
+    private LatLng mLatLng;
     private FusedLocationProviderClient fusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        getLocationPermission();
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -54,19 +58,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Log.d(TAG, "Map is ready!");
         mMap = googleMap;
 
-        if (mLocationPermissionGranted) {
-            getAndShowTweetsNearMe();
-        } else {
-            getAndShowDefaultTweets();
-        }
-
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        LatLng tampa = new LatLng(27.94752, -82.45843);// 27.9506° N, 82.4572° W
-        mMap.addMarker(new MarkerOptions().position(tampa).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(tampa));
+//        LatLng sydney = new LatLng(-34, 151);
+//        LatLng tampa = new LatLng(27.94752, -82.45843);// 27.9506° N, 82.4572° W
+//        mMap.addMarker(new MarkerOptions().position(tampa).title("Marker in Sydney"));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(tampa));
+
+        Log.d(TAG, "Asking for permission");
+        getLocationPermission();
+
+        if (mLocationPermissionGranted) getCurrentLocation();
     }
 
     public void getLocationPermission() {
@@ -76,6 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
             Log.d(TAG, "permission already given");
+            //getCurrentLocation();
         } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(MapsActivity.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -95,10 +100,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         .create()
                         .show();
             } else {
+                Log.d(TAG, "permission not previously denied, requesting permission");
                 ActivityCompat.requestPermissions(MapsActivity.this,
                         new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                         PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-                Log.d(TAG, "permission not previously denied, requesting permission");
+
             }
         }
     }
@@ -119,6 +125,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         }
+        getCurrentLocation();
     }
 
     public void getAndShowTweetsNearMe() {
@@ -127,18 +134,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         showTweets();
     }
 
-    private void getAndShowDefaultTweets() {
-        setDefaultLocation();
-        getTweets();
-        showTweets();
-    }
 
     private void getCurrentLocation() {
+        if (mLocationPermissionGranted) {
+            try {
+                Log.d(TAG, "Getting actual device location.");
+                fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                // Got last known location. In some rare situations this can be null.
+                                if (location != null) {
+                                    // Logic to handle location object
+                                    Log.d(TAG, "Location retreval successful.");
+                                    mLocation = location;
+                                    updateMapWithLocation();
+                                }
+                            }
+                        });
+            } catch(SecurityException e) {
+                Log.d("EXCEPTION: ",  e.getMessage());
+            }
+        } else {
+            Log.d(TAG, "Setting location to default, Googleplex");
+            mLocation = new Location("");
+            mLocation.setLatitude(37.422);
+            mLocation.setLongitude(-122.084);
+            updateMapWithLocation();
+        }
+
 
     }
 
-    private void setDefaultLocation() {
+    private void updateMapWithLocation() {
+        mLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
+        mMap.addMarker(new MarkerOptions().position(mLatLng).title(mLatLng.latitude + ", " + mLatLng.longitude));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(mLatLng));
 
+        // get tweets
+        getTweets();
+        // show radius of 1 mile where tweets will be located
     }
 
     private void getTweets() {
