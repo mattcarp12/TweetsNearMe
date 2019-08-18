@@ -5,13 +5,11 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import org.matt.tweetsnearme.MapsActivity;
 import org.matt.tweetsnearme.R;
 
 import java.util.List;
 
 import twitter4j.GeoLocation;
-import twitter4j.JSONObject;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.Status;
@@ -31,6 +29,7 @@ public class TweetUtility {
     private Query mQuery;
     private QueryResult mQueryResult;
     private static final int TWEET_RADIUS = 1;
+    private static final int MAX_TWEETS = 50;
 
 
     public TweetUtility(Context mContext) {
@@ -40,32 +39,30 @@ public class TweetUtility {
 
     private void configure() {
         cb = new ConfigurationBuilder();
-        String twitter_api_key = mContext.getResources().getString(R.string.twitter_api_consumer_key);
-        String twitter_api_secret_key = mContext.getResources().getString(R.string.twitter_api_consumer_secret_key);
-        String twitter_api_access_token = mContext.getResources().getString(R.string.twitter_api_access_token);
-        String twitter_api_access_token_secret = mContext.getResources().getString(R.string.twitter_api_access_token_secret);
-        Log.d(TAG, "Twitter API key: " + twitter_api_key);
-        Log.d(TAG, "Twitter API secret key: " + twitter_api_secret_key);
+
         cb.setDebugEnabled(true)
-          .setOAuthConsumerKey(twitter_api_key)
-          .setOAuthConsumerSecret(twitter_api_secret_key)
-          .setOAuthAccessToken(twitter_api_access_token)
-          .setOAuthAccessTokenSecret(twitter_api_access_token_secret);
+                .setOAuthConsumerKey(mContext.getResources().getString(R.string.twitter_api_consumer_key))
+                .setOAuthConsumerSecret(mContext.getResources().getString(R.string.twitter_api_consumer_secret_key))
+                .setOAuthAccessToken(mContext.getResources().getString(R.string.twitter_api_access_token))
+                .setOAuthAccessTokenSecret(mContext.getResources().getString(R.string.twitter_api_access_token_secret));
+
         tf = new TwitterFactory(cb.build());
         twit = tf.getInstance();
         Log.d(TAG, "twitter configuration complete");
     }
 
-    public String tweetQuery(LatLng mLatLng) {
-        mQuery = new Query().geoCode(new GeoLocation(mLatLng.latitude, mLatLng.longitude), TWEET_RADIUS, Query.MILES);
+    public List tweetQuery(LatLng mLatLng) {
+        mQuery = new Query()
+                .count(MAX_TWEETS)
+                .sinceId(1)
+                .geoCode(new GeoLocation(mLatLng.latitude, mLatLng.longitude), TWEET_RADIUS, Query.MILES);
+        Log.d(TAG, "sinceId: " + mQuery.getSince());
         try {
             mQueryResult = twit.search(mQuery);
             Log.d(TAG, "Querying twitter");
             List<Status> statusList = mQueryResult.getTweets();
             Log.d(TAG, "number of tweets: " + statusList.size());
-            if (statusList.size() != 0) {
-                return statusList.get(0).getText();
-            } else return "No tweets nearby.";
+            return statusList;
 
 
         } catch (TwitterException e) {
