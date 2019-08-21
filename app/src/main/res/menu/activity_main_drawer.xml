@@ -21,18 +21,16 @@
              android:icon="@drawable/ic_menu_manage"
              android:title="@string/menu_tools" />
      </group>-->
+    <group android:checkableBehavior="single">
 
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_tweet_map"
-                android:title="@string/menu_tweet_map" />
-            <!--android:icon="@drawable/ic_menu_share"-->
-            <item
-                android:id="@+id/nav_tweet_list"
-                android:title="@string/menu_tweet_list" />
-            <!--android:icon="@drawable/ic_menu_send"-->
-        </menu>
-    </item>
+        <item
+            android:id="@+id/nav_tweet_map"
+            android:title="@string/menu_tweet_map" />
+        <!--android:icon="@drawable/ic_menu_share"-->
+        <item
+            android:id="@+id/nav_tweet_list"
+            android:title="@string/menu_tweet_list" />
+        <!--android:icon="@drawable/ic_menu_send"-->
 
+    </group>
 </menu>
