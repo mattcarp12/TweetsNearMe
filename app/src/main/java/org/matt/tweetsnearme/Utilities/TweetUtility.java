@@ -18,7 +18,7 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
-
+// TODO: Rewrite this class so that it uses Retrofit API instead of Twitter4j API
 public class TweetUtility {
 
     private static final String TAG = TweetUtility.class.getSimpleName();

@@ -31,8 +31,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
+import com.twitter.sdk.android.core.models.Tweet;
 
-import org.matt.tweetsnearme.Utilities.TweetUtility;
+import org.matt.tweetsnearme.Utilities.TwitterService;
 
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class MapsActivity extends AppCompatActivity //FragmentActivity
     private Location mLocation;
     private LatLng mLatLng;
     private FusedLocationProviderClient fusedLocationClient;
-    private TweetUtility tweetUtility;
+    private List<Tweet> tweetList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +78,6 @@ public class MapsActivity extends AppCompatActivity //FragmentActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(MapsActivity.this);
-        tweetUtility = new TweetUtility(this);
     }
 
     @Override
@@ -95,8 +95,7 @@ public class MapsActivity extends AppCompatActivity //FragmentActivity
                 return true;
 
             case R.id.action_refresh:
-                // User chose the "Favorite" action, mark the current item
-                // as a favorite...
+                getCurrentLocation();
                 return true;
 
             default:
@@ -229,9 +228,7 @@ public class MapsActivity extends AppCompatActivity //FragmentActivity
                                     // Logic to handle location object
                                     Log.d(TAG, "Location retreval successful.");
                                     mLocation = location;
-                                    //Log.d(TAG, "Current latitude: " + location.getLatitude() +
-                                    //         ". Current longitute: " + location.getLongitude());
-                                    updateMapWithLocation();
+                                    updateMapWithLocationAndTweets();
                                 } else {
                                     // TODO: Request current location if null
                                     Log.d(TAG, "Last known location is null, setting to default");
@@ -254,25 +251,26 @@ public class MapsActivity extends AppCompatActivity //FragmentActivity
         mLocation = new Location("");
         mLocation.setLatitude(37.422);
         mLocation.setLongitude(-122.084);
-        updateMapWithLocation();
+        updateMapWithLocationAndTweets();
     }
 
-    private void updateMapWithLocation() {
+    private void updateMapWithLocationAndTweets() {
         mLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
         //mMap.addMarker(new MarkerOptions().position(mLatLng).title(mLatLng.latitude + ", " + mLatLng.longitude));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(mLatLng));
 
 
         // TODO: show radius of 1 mile where tweets will be located
+        // TODO: Set altitude properly so that zooms into 1 mile radius
 
         // Once initial location has been set, make call to get tweets
         new TwitterQueryTask().execute(mLatLng);
-
-
     }
 
+    // TODO: Create functionality to refresh tweets and reload map and/or RecycleView list
+    // TODO: Create functionality to set preferences for radius, number of tweets to show, etc.
 
-    public class TwitterQueryTask extends AsyncTask<LatLng, Void, List<twitter4j.Status>> {
+    public class TwitterQueryTask extends AsyncTask<LatLng, Void, Void> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -282,8 +280,8 @@ public class MapsActivity extends AppCompatActivity //FragmentActivity
         }
 
         @Override
-        protected void onPostExecute(List<twitter4j.Status> tweetList) {
-            super.onPostExecute(tweetList);
+        protected void onPostExecute(Void voidObj) {
+            super.onPostExecute(voidObj);
 
             // TODO: As soon as loading is complete, hide the loading indicator
 
@@ -291,19 +289,23 @@ public class MapsActivity extends AppCompatActivity //FragmentActivity
             // TODO: Make custom map marker for tweets
             // TODO: Custom marker should show tweet, username, and distance from current location
 
-            for (twitter4j.Status status : tweetList) {
-                if (status.getGeoLocation() != null)
+            for (Tweet tweet : tweetList) {
+                if (tweet.coordinates != null)
                     mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(status.getGeoLocation().getLatitude(), status.getGeoLocation().getLongitude()))
+                            .position(new LatLng(tweet.coordinates.getLatitude(), tweet.coordinates.getLongitude()))
                             .title("Title")
-                            .snippet(status.getText()));
+                            .snippet(tweet.text));
             }
         }
 
         @Override
-        protected List doInBackground(LatLng... mLatLng) {
-            return tweetUtility.tweetQuery(mLatLng[0]);
+        protected Void doInBackground(LatLng... mLatLng) {
+            TwitterService.getToken();
+            tweetList = TwitterService.getTweets(mLatLng[0], 1, 100);
+            return null;
         }
+
+
     }
 
 }
