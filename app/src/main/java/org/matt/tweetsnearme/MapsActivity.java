@@ -52,7 +52,7 @@ public class MapsActivity extends AppCompatActivity //FragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_maps);
+        //setContentView(R.layout.content_map);
         setContentView(R.layout.activity_main);
 
         // Set toolbar
