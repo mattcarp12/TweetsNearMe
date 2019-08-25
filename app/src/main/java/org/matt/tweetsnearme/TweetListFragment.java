@@ -4,11 +4,17 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import org.matt.tweetsnearme.Utilities.TweetListAdapter;
 
 
 /**
@@ -23,13 +29,17 @@ public class TweetListFragment extends Fragment {
 
 
     private OnFragmentInteractionListener mListener;
+    private MainActivity mainActivity;
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager layoutManager;
 
     public TweetListFragment() {
         // Required empty public constructor
     }
 
 
-    public static TweetListFragment newInstance(String param1, String param2) {
+    public static TweetListFragment newInstance() {
         TweetListFragment fragment = new TweetListFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -45,14 +55,25 @@ public class TweetListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        mainActivity = (MainActivity) getActivity();
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_recyclerview, container, false);
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        recyclerView = (RecyclerView) mainActivity.findViewById(R.id.rv_tweet_list);
+        layoutManager = new LinearLayoutManager(mainActivity);
+        recyclerView.setLayoutManager(layoutManager);
+        mAdapter = new TweetListAdapter(mainActivity.tweetList);
+        recyclerView.setAdapter(mAdapter);
+    }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
@@ -67,16 +88,6 @@ public class TweetListFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

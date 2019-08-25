@@ -1,6 +1,7 @@
 package org.matt.tweetsnearme.Utilities;
 
 
+import android.location.Location;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -63,10 +64,10 @@ public class TwitterService {
         }
     }
 
-   public static List<Tweet> getTweets(LatLng currLoc, int radius, int maxTweets) {
+   public static List<Tweet> getTweets(Location currLoc, int radius, int maxTweets) {
        ArrayList<Tweet> tweetList = new ArrayList<>();
-       String geoCodeString = Double.toString(currLoc.latitude) + "," +
-               Double.toString(currLoc.longitude) + "," +
+       String geoCodeString = Double.toString(currLoc.getLatitude()) + "," +
+               Double.toString(currLoc.getLongitude()) + "," +
                Integer.toString(radius) + "mi";
         try {
             Response<Search> response = twitterApi.getTweets(

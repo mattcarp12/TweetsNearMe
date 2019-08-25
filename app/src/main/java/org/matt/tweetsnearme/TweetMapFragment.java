@@ -13,10 +13,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.twitter.sdk.android.core.models.Tweet;
 
 public class TweetMapFragment extends Fragment implements OnMapReadyCallback {
 
@@ -24,23 +27,23 @@ public class TweetMapFragment extends Fragment implements OnMapReadyCallback {
     private OnFragmentInteractionListener mListener;
     private static final String TAG = TweetMapFragment.class.getSimpleName();
     private GoogleMap mMap;
+    private MainActivity mainActivity;
+    private LatLng mLatLng;
 
     public TweetMapFragment() {
         // Required empty public constructor
     }
 
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        mainActivity = (MainActivity) getActivity();
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
 
@@ -51,6 +54,37 @@ public class TweetMapFragment extends Fragment implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(TweetMapFragment.this);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        // TODO: show radius of 1 mile where tweets will be located
+        // TODO: Set altitude properly so that zooms into 1 mile radius
+
+        Log.d(TAG, "Map is ready!");
+        mMap = googleMap;
+        setMapPosition();
+        addMapMarkers();
+    }
+
+    private void setMapPosition() {
+        mLatLng = new LatLng(mainActivity.mLocation.getLatitude(),
+                             mainActivity.mLocation.getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(mLatLng));
+    }
+
+    private void addMapMarkers() {
+        // TODO: Make custom map marker for tweets
+        // TODO: Custom marker should show tweet, username, and distance from current location
+
+
+        for (Tweet tweet : mainActivity.tweetList) {
+            if (tweet.coordinates != null)
+                mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(tweet.coordinates.getLatitude(), tweet.coordinates.getLongitude()))
+                        .title("Title")
+                        .snippet(tweet.text));
+        }
     }
 
     @Override
@@ -70,33 +104,6 @@ public class TweetMapFragment extends Fragment implements OnMapReadyCallback {
         mListener = null;
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        Log.d(TAG, "Map is ready!");
-        mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        LatLng tampa = new LatLng(27.94752, -82.45843);// 27.9506° N, 82.4572° W
-//        mMap.addMarker(new MarkerOptions().position(tampa).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(tampa));
-
-        Log.d(TAG, "Asking for permission");
-        //getLocationPermission();
-
-        //if (mLocationPermissionGranted) getCurrentLocation();
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

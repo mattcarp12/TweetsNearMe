@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,12 +26,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.twitter.sdk.android.core.models.Tweet;
@@ -39,17 +36,18 @@ import org.matt.tweetsnearme.Utilities.TwitterService;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity //FragmentActivity
-        implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener,
+        TweetMapFragment.OnFragmentInteractionListener,
+        TweetListFragment.OnFragmentInteractionListener{
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private GoogleMap mMap;
     private boolean mLocationPermissionGranted;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    private Location mLocation;
-    private LatLng mLatLng;
+    Location mLocation;
     private FusedLocationProviderClient fusedLocationClient;
-    private List<Tweet> tweetList;
+    List<Tweet> tweetList;
+    private Integer currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,12 +70,10 @@ public class MainActivity extends AppCompatActivity //FragmentActivity
 
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        getLocationPermission();
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(MainActivity.this);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -117,14 +113,17 @@ public class MainActivity extends AppCompatActivity //FragmentActivity
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        displaySelectedScreen(item.getItemId());
+        return true;
+    }
 
+    private void displaySelectedScreen(int itemId) {
+        currentFragment = itemId;
         //creating fragment object
         Fragment fragment = null;
 
         //initializing the fragment object which is selected
-        switch (id) {
+        switch (itemId) {
             case R.id.nav_tweet_map:
                 fragment = new TweetMapFragment();
                 break;
@@ -140,39 +139,11 @@ public class MainActivity extends AppCompatActivity //FragmentActivity
             ft.commit();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 
 
-
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        Log.d(TAG, "Map is ready!");
-        mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        LatLng tampa = new LatLng(27.94752, -82.45843);// 27.9506° N, 82.4572° W
-//        mMap.addMarker(new MarkerOptions().position(tampa).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(tampa));
-
-        Log.d(TAG, "Asking for permission");
-        getLocationPermission();
-
-        if (mLocationPermissionGranted) getCurrentLocation();
-    }
 
     public void getLocationPermission() {
         mLocationPermissionGranted = false;
@@ -181,8 +152,8 @@ public class MainActivity extends AppCompatActivity //FragmentActivity
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
             Log.d(TAG, "permission already given");
-            //getCurrentLocation();
-        } else {
+            getCurrentLocation();
+        } else { // If don't currently have permission, then request permission
             if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
                 Log.d(TAG, "permission previously denied, requesting permission");
@@ -243,7 +214,7 @@ public class MainActivity extends AppCompatActivity //FragmentActivity
                                     // Logic to handle location object
                                     Log.d(TAG, "Location retreval successful.");
                                     mLocation = location;
-                                    updateMapWithLocationAndTweets();
+                                    getTweetList();
                                 } else {
                                     // TODO: Request current location if null
                                     Log.d(TAG, "Last known location is null, setting to default");
@@ -266,60 +237,41 @@ public class MainActivity extends AppCompatActivity //FragmentActivity
         mLocation = new Location("");
         mLocation.setLatitude(37.422);
         mLocation.setLongitude(-122.084);
-        updateMapWithLocationAndTweets();
+        getTweetList();
     }
 
-    private void updateMapWithLocationAndTweets() {
-        mLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
-        //mMap.addMarker(new MarkerOptions().position(mLatLng).title(mLatLng.latitude + ", " + mLatLng.longitude));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(mLatLng));
-
-
-        // TODO: show radius of 1 mile where tweets will be located
-        // TODO: Set altitude properly so that zooms into 1 mile radius
-
-        // Once initial location has been set, make call to get tweets
-        new TwitterQueryTask().execute(mLatLng);
+    private void getTweetList() {
+        new TwitterQueryTask().execute(mLocation);
     }
+
 
     // TODO: Create functionality to refresh tweets and reload map and/or RecycleView list
     // TODO: Create functionality to set preferences for radius, number of tweets to show, etc.
 
-    public class TwitterQueryTask extends AsyncTask<LatLng, Void, Void> {
+    public class TwitterQueryTask extends AsyncTask<Location, Void, Void> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
             // TODO: Set loading indicator to visible
-
         }
 
         @Override
         protected void onPostExecute(Void voidObj) {
             super.onPostExecute(voidObj);
-
             // TODO: As soon as loading is complete, hide the loading indicator
-
-            // Completed: If query results are valid, show markers on map
-            // TODO: Make custom map marker for tweets
-            // TODO: Custom marker should show tweet, username, and distance from current location
-
-            for (Tweet tweet : tweetList) {
-                if (tweet.coordinates != null)
-                    mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(tweet.coordinates.getLatitude(), tweet.coordinates.getLongitude()))
-                            .title("Title")
-                            .snippet(tweet.text));
-            }
+            if (currentFragment == null) displaySelectedScreen(R.id.nav_tweet_map);
         }
 
         @Override
-        protected Void doInBackground(LatLng... mLatLng) {
+        protected Void doInBackground(Location... mLocation) {
             TwitterService.getToken();
-            tweetList = TwitterService.getTweets(mLatLng[0], 1, 100);
+            tweetList = TwitterService.getTweets(mLocation[0], 1, 100);
             return null;
         }
+    }
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
     }
 
