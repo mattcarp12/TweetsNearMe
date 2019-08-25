@@ -20,6 +20,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -37,10 +39,10 @@ import org.matt.tweetsnearme.Utilities.TwitterService;
 
 import java.util.List;
 
-public class MapsActivity extends AppCompatActivity //FragmentActivity
+public class MainActivity extends AppCompatActivity //FragmentActivity
         implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
-    private static final String TAG = MapsActivity.class.getSimpleName();
+    private static final String TAG = MainActivity.class.getSimpleName();
     private GoogleMap mMap;
     private boolean mLocationPermissionGranted;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
@@ -52,7 +54,6 @@ public class MapsActivity extends AppCompatActivity //FragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.content_map);
         setContentView(R.layout.activity_main);
 
         // Set toolbar
@@ -62,8 +63,6 @@ public class MapsActivity extends AppCompatActivity //FragmentActivity
         // Code for nav drawer
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setHomeButtonEnabled(true);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -77,7 +76,7 @@ public class MapsActivity extends AppCompatActivity //FragmentActivity
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(MapsActivity.this);
+        mapFragment.getMapAsync(MainActivity.this);
     }
 
     @Override
@@ -121,16 +120,32 @@ public class MapsActivity extends AppCompatActivity //FragmentActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_tweet_map) {
-            // Handle the camera action
-        } else if (id == R.id.nav_tweet_list) {
+        //creating fragment object
+        Fragment fragment = null;
 
+        //initializing the fragment object which is selected
+        switch (id) {
+            case R.id.nav_tweet_map:
+                fragment = new TweetMapFragment();
+                break;
+            case R.id.nav_tweet_list:
+                fragment = new TweetListFragment();
+                break;
         }
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        //replacing the fragment
+        if (fragment != null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.fragment_content, fragment);
+            ft.commit();
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
 
 
     /**
@@ -161,14 +176,14 @@ public class MapsActivity extends AppCompatActivity //FragmentActivity
 
     public void getLocationPermission() {
         mLocationPermissionGranted = false;
-        if (ContextCompat.checkSelfPermission(MapsActivity.this.getApplicationContext(),
+        if (ContextCompat.checkSelfPermission(MainActivity.this.getApplicationContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
             Log.d(TAG, "permission already given");
             //getCurrentLocation();
         } else {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MapsActivity.this,
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
                 Log.d(TAG, "permission previously denied, requesting permission");
                 new AlertDialog.Builder(this)
@@ -178,7 +193,7 @@ public class MapsActivity extends AppCompatActivity //FragmentActivity
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //Prompt the user once explanation has been shown
-                                ActivityCompat.requestPermissions(MapsActivity.this,
+                                ActivityCompat.requestPermissions(MainActivity.this,
                                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                         PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
                             }
@@ -187,7 +202,7 @@ public class MapsActivity extends AppCompatActivity //FragmentActivity
                         .show();
             } else {
                 Log.d(TAG, "permission not previously denied, requesting permission");
-                ActivityCompat.requestPermissions(MapsActivity.this,
+                ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                         PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
 
