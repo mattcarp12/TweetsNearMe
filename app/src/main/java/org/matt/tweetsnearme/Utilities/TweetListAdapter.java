@@ -33,7 +33,7 @@ public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.MyVi
                                                      int viewType) {
         // create a new view
         View myLayout = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.tweet_list_view, parent, false);
+                .inflate(R.layout.tweet_view, parent, false);
         return new MyViewHolder(myLayout);
     }
 
