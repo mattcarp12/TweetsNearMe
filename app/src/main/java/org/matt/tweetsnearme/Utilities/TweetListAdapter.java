@@ -9,11 +9,13 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.twitter.sdk.android.core.models.Tweet;
 
 import org.matt.tweetsnearme.R;
 
 import java.util.List;
+
 
 public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.MyViewHolder> {
     private List<Tweet> mDataset;
@@ -45,7 +47,7 @@ public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.MyVi
         holder.tweetUserName.setText(currTweet.user.name);
         holder.tweetText.setText(currTweet.text);
         holder.tweetDistance.setText("5");
-
+        Glide.with(context).load(currTweet.user.profileImageUrlHttps).into(holder.tweetUserImage);
 
     }
 
@@ -66,6 +68,7 @@ public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.MyVi
             tweetText = tweetLayout.findViewById(R.id.tweet_text);
         }
     }
+
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
