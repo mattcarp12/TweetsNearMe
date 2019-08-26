@@ -3,15 +3,14 @@ package org.matt.tweetsnearme;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -70,7 +69,7 @@ public class TweetMapFragment extends Fragment implements OnMapReadyCallback {
     private void setMapPosition() {
         mLatLng = new LatLng(mainActivity.mLocation.getLatitude(),
                              mainActivity.mLocation.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(mLatLng));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLatLng, 13));
     }
 
     private void addMapMarkers() {

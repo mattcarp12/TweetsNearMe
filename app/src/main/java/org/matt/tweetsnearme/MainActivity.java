@@ -26,10 +26,9 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
+import com.twitter.sdk.android.core.Twitter;
 import com.twitter.sdk.android.core.models.Tweet;
 
 import org.matt.tweetsnearme.Utilities.TwitterService;
@@ -53,6 +52,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Twitter.initialize(this);
 
         // Set toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -66,8 +66,6 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
-
-
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         getLocationPermission();
@@ -142,8 +140,6 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
     }
-
-
 
     public void getLocationPermission() {
         mLocationPermissionGranted = false;

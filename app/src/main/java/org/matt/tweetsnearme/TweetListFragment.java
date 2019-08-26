@@ -3,16 +3,15 @@ package org.matt.tweetsnearme;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import org.matt.tweetsnearme.Utilities.TweetListAdapter;
 
@@ -63,10 +62,10 @@ public class TweetListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        recyclerView = (RecyclerView) mainActivity.findViewById(R.id.rv_tweet_list);
+        recyclerView = mainActivity.findViewById(R.id.rv_tweet_list);
         layoutManager = new LinearLayoutManager(mainActivity);
         recyclerView.setLayoutManager(layoutManager);
-        mAdapter = new TweetListAdapter(mainActivity.tweetList);
+        mAdapter = new TweetListAdapter(mainActivity.tweetList, mainActivity);
         recyclerView.setAdapter(mAdapter);
     }
 
