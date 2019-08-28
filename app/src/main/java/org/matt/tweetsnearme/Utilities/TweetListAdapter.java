@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
+import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.core.models.Tweet;
 
 import org.matt.tweetsnearme.R;
@@ -47,7 +47,7 @@ public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.MyVi
         holder.tweetUserName.setText(currTweet.user.name);
         holder.tweetText.setText(currTweet.text);
         holder.tweetDistance.setText("5");
-        Glide.with(context).load(currTweet.user.profileImageUrlHttps).into(holder.tweetUserImage);
+        Picasso.with(context).load(currTweet.user.profileImageUrlHttps).into(holder.tweetUserImage);
 
     }
 

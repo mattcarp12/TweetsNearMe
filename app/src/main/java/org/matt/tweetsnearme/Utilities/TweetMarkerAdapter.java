@@ -18,8 +18,10 @@ import org.matt.tweetsnearme.R;
 public class TweetMarkerAdapter implements GoogleMap.InfoWindowAdapter {
 
     private final View tweetView;
+    private final Context context;
 
     public TweetMarkerAdapter(Context context) {
+        this.context = context;
         tweetView = LayoutInflater.from(context).inflate(R.layout.tweet_view, null);
     }
 
@@ -39,7 +41,7 @@ public class TweetMarkerAdapter implements GoogleMap.InfoWindowAdapter {
         ((TextView) view.findViewById(R.id.tweet_username)).setText(tweet.user.name);
         ((TextView) view.findViewById(R.id.tweet_distance)).setText("5");
         ((TextView) view.findViewById(R.id.tweet_text)).setText(tweet.text);
-        Picasso.get()
+        Picasso.with(context)
                 .load(tweet.user.profileImageUrlHttps)
                 .into((ImageView) view.findViewById(R.id.tweet_author_image), new MarkerCallback(marker));
 
@@ -60,6 +62,7 @@ public class TweetMarkerAdapter implements GoogleMap.InfoWindowAdapter {
         @Override
         public void onSuccess() {
             if (marker != null && marker.isInfoWindowShown()) {
+                marker.hideInfoWindow();
                 marker.showInfoWindow();
             }
         }

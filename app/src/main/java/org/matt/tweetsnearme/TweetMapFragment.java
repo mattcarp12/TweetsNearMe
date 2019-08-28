@@ -17,12 +17,14 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.twitter.sdk.android.core.models.Tweet;
 
 import org.matt.tweetsnearme.Utilities.TweetMarkerAdapter;
 
-public class TweetMapFragment extends Fragment implements OnMapReadyCallback {
+public class TweetMapFragment extends Fragment implements
+        OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
 
     private OnFragmentInteractionListener mListener;
@@ -68,6 +70,7 @@ public class TweetMapFragment extends Fragment implements OnMapReadyCallback {
         Log.d(TAG, "Map is ready!");
         mMap = googleMap;
         mMap.setInfoWindowAdapter(tweetMarkerAdapter);
+        mMap.setOnInfoWindowClickListener(this);
         setMapPosition();
         addMapMarkers();
     }
@@ -87,10 +90,13 @@ public class TweetMapFragment extends Fragment implements OnMapReadyCallback {
             if (tweet.coordinates != null)
                 mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(tweet.coordinates.getLatitude(), tweet.coordinates.getLongitude()))
-                        //.title("Title")
-                        //.snippet(tweet.text))
                 ).setTag(tweet);
         }
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+
     }
 
     @Override
