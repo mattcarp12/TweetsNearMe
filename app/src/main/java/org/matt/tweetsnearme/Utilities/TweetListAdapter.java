@@ -10,8 +10,8 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
-import com.twitter.sdk.android.core.models.Tweet;
 
+import org.matt.tweetsnearme.Model.Tweet;
 import org.matt.tweetsnearme.R;
 
 import java.util.List;
@@ -44,10 +44,10 @@ public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.MyVi
         // - replace the contents of the view with that element
         //holder.textView.setText(mDataset.get(position).text);
         Tweet currTweet = mDataset.get(position);
-        holder.tweetUserName.setText(currTweet.user.name);
-        holder.tweetText.setText(currTweet.text);
+        holder.tweetUserName.setText(currTweet.getUser().getName());
+        holder.tweetText.setText(currTweet.getText());
         holder.tweetDistance.setText("5");
-        Picasso.with(context).load(currTweet.user.profileImageUrlHttps).into(holder.tweetUserImage);
+        Picasso.with(context).load(currTweet.getUser().getProfileImageUrlHttps()).into(holder.tweetUserImage);
 
     }
 

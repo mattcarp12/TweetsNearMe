@@ -28,9 +28,8 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
-import com.twitter.sdk.android.core.Twitter;
-import com.twitter.sdk.android.core.models.Tweet;
 
+import org.matt.tweetsnearme.Model.Tweet;
 import org.matt.tweetsnearme.Utilities.TwitterService;
 
 import java.util.List;
@@ -52,7 +51,6 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Twitter.initialize(this);
 
         // Set toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);

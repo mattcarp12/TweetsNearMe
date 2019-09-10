@@ -15,7 +15,7 @@
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
         app:layout_constraintStart_toStartOf="parent"
-        android:src="@color/tw__composer_white"
+        android:src="@color/white"
         app:layout_constraintTop_toTopOf="parent" />
 
     <View

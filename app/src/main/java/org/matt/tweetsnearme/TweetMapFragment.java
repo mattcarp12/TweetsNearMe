@@ -19,8 +19,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.twitter.sdk.android.core.models.Tweet;
 
+import org.matt.tweetsnearme.Model.Tweet;
 import org.matt.tweetsnearme.Utilities.TweetMarkerAdapter;
 
 public class TweetMapFragment extends Fragment implements
@@ -87,9 +87,9 @@ public class TweetMapFragment extends Fragment implements
 
 
         for (Tweet tweet : mainActivity.tweetList) {
-            if (tweet.coordinates != null)
+            if (tweet.getCoordinates() != null)
                 mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(tweet.coordinates.getLatitude(), tweet.coordinates.getLongitude()))
+                        .position(new LatLng(tweet.getCoordinates().getLatitude(), tweet.getCoordinates().getLongitude()))
                 ).setTag(tweet);
         }
     }

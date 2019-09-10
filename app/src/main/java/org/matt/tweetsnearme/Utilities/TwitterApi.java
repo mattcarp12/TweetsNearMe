@@ -1,6 +1,8 @@
 package org.matt.tweetsnearme.Utilities;
 
-import com.twitter.sdk.android.core.models.Search;
+//import com.twitter.sdk.android.core.models.Search;
+
+import org.matt.tweetsnearme.Model.Search;
 
 import retrofit2.Call;
 import retrofit2.http.Field;

@@ -11,8 +11,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import com.twitter.sdk.android.core.models.Tweet;
 
+import org.matt.tweetsnearme.Model.Tweet;
 import org.matt.tweetsnearme.R;
 
 public class TweetMarkerAdapter implements GoogleMap.InfoWindowAdapter {
@@ -38,11 +38,11 @@ public class TweetMarkerAdapter implements GoogleMap.InfoWindowAdapter {
 
     private void render(Marker marker, View view) {
         Tweet tweet = (Tweet) marker.getTag();
-        ((TextView) view.findViewById(R.id.tweet_username)).setText(tweet.user.name);
+        ((TextView) view.findViewById(R.id.tweet_username)).setText(tweet.getUser().getName());
         ((TextView) view.findViewById(R.id.tweet_distance)).setText("5");
-        ((TextView) view.findViewById(R.id.tweet_text)).setText(tweet.text);
+        ((TextView) view.findViewById(R.id.tweet_text)).setText(tweet.getText());
         Picasso.with(context)
-                .load(tweet.user.profileImageUrlHttps)
+                .load(tweet.getUser().getProfileImageUrlHttps())
                 .into((ImageView) view.findViewById(R.id.tweet_author_image), new MarkerCallback(marker));
 
     }
