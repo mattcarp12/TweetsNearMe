@@ -1,4 +1,4 @@
-package org.matt.tweetsnearme.Utilities;
+package org.matt.tweetsnearme.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;

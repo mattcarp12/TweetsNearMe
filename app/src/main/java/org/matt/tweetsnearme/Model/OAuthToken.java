@@ -1,4 +1,4 @@
-package org.matt.tweetsnearme.Utilities;
+package org.matt.tweetsnearme.Model;
 
 import com.google.gson.annotations.SerializedName;
 

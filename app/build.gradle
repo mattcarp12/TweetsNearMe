@@ -35,8 +35,24 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.google.android.gms:play-services-location:11.0.0'
     implementation 'com.google.android.material:material:1.0.0'
+
+    // Retrofit, okhttp, picasso
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
+
+    // Room DB components
+    def roomVersion = "2.2.0-rc01"
+    implementation "androidx.room:room-runtime:$roomVersion"
+    annotationProcessor "androidx.room:room-compiler:$roomVersion"
+    androidTestImplementation "androidx.room:room-testing:$roomVersion"
+
+    // RxJava
+    def rxAndroidVersion = "2.1.1"
+    def rxJavaVersion = "2.1.7"
+    def retrofit2RxJava2AdapterVersion = "2.3.0"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit2RxJava2AdapterVersion"
 }

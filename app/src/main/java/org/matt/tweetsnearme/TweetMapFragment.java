@@ -20,8 +20,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.matt.tweetsnearme.Adapters.TweetMarkerAdapter;
 import org.matt.tweetsnearme.Model.Tweet;
-import org.matt.tweetsnearme.Utilities.TweetMarkerAdapter;
 
 public class TweetMapFragment extends Fragment implements
         OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {

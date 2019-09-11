@@ -1,7 +1,10 @@
 package org.matt.tweetsnearme.Model;
 
+import androidx.room.Entity;
+
 import com.google.gson.annotations.SerializedName;
 
+@Entity(tableName = "tweets")
 public class Tweet {
 
     @SerializedName("text")

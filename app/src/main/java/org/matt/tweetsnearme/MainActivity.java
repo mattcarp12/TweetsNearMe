@@ -30,7 +30,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 
 import org.matt.tweetsnearme.Model.Tweet;
-import org.matt.tweetsnearme.Utilities.TwitterService;
+import org.matt.tweetsnearme.Network.TwitterService;
 
 import java.util.List;
 
