@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -66,7 +67,7 @@ public class TwitterService {
         }
     }*/
 
-    public static void getToken() {
+    public void getToken() {
         twitterApi.postCredentials("client_credentials")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -113,7 +114,7 @@ public class TwitterService {
         return tweetList;
     }*/
 
-    public static List<Tweet> getTweets(Location currLoc, int radius, int maxTweets) {
+    public Observable<List<Tweet>> getTweets(Location currLoc, int radius, int maxTweets) {
         ArrayList<Tweet> tweetList = new ArrayList<>();
         String geoCodeString = currLoc.getLatitude() + "," +
                 currLoc.getLongitude() + "," +
@@ -141,6 +142,6 @@ public class TwitterService {
                     public void onComplete() {
 
                     }
-                })
+                });
     }
 }

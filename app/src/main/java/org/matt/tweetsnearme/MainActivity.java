@@ -22,8 +22,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -49,7 +47,7 @@ public class MainActivity extends AppCompatActivity
     private FusedLocationProviderClient fusedLocationClient;
     List<Tweet> tweetList;
     private Integer currentFragment;
-    ViewModel mViewModel;
+    TweetViewModel mViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,9 +137,10 @@ public class MainActivity extends AppCompatActivity
 
         //replacing the fragment
         if (fragment != null) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.fragment_content, fragment);
-            ft.commit();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_content, fragment)
+                    .commit();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -231,8 +230,6 @@ public class MainActivity extends AppCompatActivity
         } else {
             setDefaultLocation();
         }
-
-
     }
 
     private void setDefaultLocation() {
