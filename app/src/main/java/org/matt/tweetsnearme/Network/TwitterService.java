@@ -2,20 +2,15 @@ package org.matt.tweetsnearme.Network;
 
 
 import android.location.Location;
-import android.util.Log;
 
 import org.matt.tweetsnearme.Model.OAuthToken;
-import org.matt.tweetsnearme.Model.Search;
 import org.matt.tweetsnearme.Model.Tweet;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
+import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Credentials;
 import okhttp3.Interceptor;
@@ -71,27 +66,8 @@ public class TwitterService {
         twitterApi.postCredentials("client_credentials")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<OAuthToken>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(OAuthToken oAuthToken) {
-                        token = oAuthToken;
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e(TAG, e.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+                .subscribe(emittedData -> token = emittedData,
+                        error -> System.out.println("Error occured: " + error));
     }
 
     /*public static List<Tweet> getTweets(Location currLoc, int radius, int maxTweets) {
@@ -114,34 +90,13 @@ public class TwitterService {
         return tweetList;
     }*/
 
-    public Observable<List<Tweet>> getTweets(Location currLoc, int radius, int maxTweets) {
-        ArrayList<Tweet> tweetList = new ArrayList<>();
+    public Flowable<List<Tweet>> getTweets(Location currLoc, int radius, int maxTweets) {
         String geoCodeString = currLoc.getLatitude() + "," +
                 currLoc.getLongitude() + "," +
                 radius + "mi";
-        twitterApi.getTweets(geoCodeString, maxTweets, 1)
+        return twitterApi.getTweets(geoCodeString, maxTweets, 1)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Search>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(Search search) {
-                        tweetList = (ArrayList) search.getTweets();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+                .map(search -> search.getTweets());
     }
 }

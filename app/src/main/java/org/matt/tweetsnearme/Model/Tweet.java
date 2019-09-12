@@ -1,11 +1,15 @@
 package org.matt.tweetsnearme.Model;
 
 import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.SerializedName;
 
 @Entity(tableName = "tweets")
 public class Tweet {
+
+    @PrimaryKey(autoGenerate = true)
+    private int id;
 
     @SerializedName("text")
     private String text;

@@ -22,6 +22,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
 }
 
 dependencies {
@@ -42,11 +46,13 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
 
-    // Room DB components
+    // Android architecture components
     def roomVersion = "2.2.0-rc01"
+    def lifecycle_version = "2.1.0"
     implementation "androidx.room:room-runtime:$roomVersion"
     annotationProcessor "androidx.room:room-compiler:$roomVersion"
     androidTestImplementation "androidx.room:room-testing:$roomVersion"
+    implementation "androidx.lifecycle:lifecycle-reactivestreams:$lifecycle_version"
 
     // RxJava
     def rxAndroidVersion = "2.1.1"
