@@ -23,6 +23,8 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -31,6 +33,7 @@ import com.google.android.material.navigation.NavigationView;
 
 import org.matt.tweetsnearme.Model.Tweet;
 import org.matt.tweetsnearme.Network.TwitterService;
+import org.matt.tweetsnearme.ViewModel.TweetViewModel;
 
 import java.util.List;
 
@@ -46,11 +49,17 @@ public class MainActivity extends AppCompatActivity
     private FusedLocationProviderClient fusedLocationClient;
     List<Tweet> tweetList;
     private Integer currentFragment;
+    ViewModel mViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Get view model instance
+        mViewModel = ViewModelProvider.AndroidViewModelFactory
+                .getInstance(getApplication())
+                .create(TweetViewModel.class);
 
         // Set toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
