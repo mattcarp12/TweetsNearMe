@@ -10,10 +10,12 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.matt.tweetsnearme.Adapters.TweetListAdapter;
+import org.matt.tweetsnearme.ViewModel.TweetViewModel;
 
 
 /**
@@ -32,6 +34,7 @@ public class TweetListFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
+    private TweetViewModel mViewModel;
 
     public TweetListFragment() {
         // Required empty public constructor
@@ -48,7 +51,9 @@ public class TweetListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        mViewModel = ViewModelProvider.AndroidViewModelFactory
+                .getInstance(getActivity().getApplication())
+                .create(TweetViewModel.class);
     }
 
     @Override

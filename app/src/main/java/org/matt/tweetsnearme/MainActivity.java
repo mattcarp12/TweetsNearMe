@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -26,11 +25,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 
 import org.matt.tweetsnearme.Model.Tweet;
-import org.matt.tweetsnearme.Network.TwitterService;
 import org.matt.tweetsnearme.ViewModel.TweetViewModel;
 
 import java.util.List;
@@ -38,16 +35,16 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         TweetMapFragment.OnFragmentInteractionListener,
-        TweetListFragment.OnFragmentInteractionListener{
+        TweetListFragment.OnFragmentInteractionListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private boolean mLocationPermissionGranted;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     Location mLocation;
-    private FusedLocationProviderClient fusedLocationClient;
     List<Tweet> tweetList;
-    private Integer currentFragment;
     TweetViewModel mViewModel;
+    private boolean mLocationPermissionGranted;
+    private FusedLocationProviderClient fusedLocationClient;
+    private Integer currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +70,9 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // TODO : Make new activity (splash screen) to ask for permission.
+        // TODO: Pass boolean mPermissionGranted to MainActivity
         getLocationPermission();
 
     }
@@ -89,11 +89,11 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                // User chose the "Settings" item, show the app settings UI...
+                // TODO: User choose the "Settings" item, show the app settings UI...
                 return true;
 
             case R.id.action_refresh:
-                getCurrentLocation();
+                // TODO : refresh tweet list
                 return true;
 
             default:
@@ -154,7 +154,6 @@ public class MainActivity extends AppCompatActivity
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
             Log.d(TAG, "permission already given");
-            getCurrentLocation();
         } else { // If don't currently have permission, then request permission
             if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -186,7 +185,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch(requestCode) {
+        switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "Location permission granted.", Toast.LENGTH_SHORT).show();
@@ -199,76 +198,8 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         }
-        getCurrentLocation();
     }
 
-
-    private void getCurrentLocation() {
-        if (mLocationPermissionGranted) {
-            try {
-                Log.d(TAG, "Getting actual device location.");
-                fusedLocationClient.getLastLocation()
-                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                            @Override
-                            public void onSuccess(Location location) {
-                                // Got last known location. In some rare situations this can be null.
-                                if (location != null) {
-                                    // Logic to handle location object
-                                    Log.d(TAG, "Location retreval successful.");
-                                    mLocation = location;
-                                    getTweetList();
-                                } else {
-                                    // TODO: Request current location if null
-                                    Log.d(TAG, "Last known location is null, setting to default");
-                                    setDefaultLocation();
-                                }
-                            }
-                        });
-            } catch(SecurityException e) {
-                Log.d("EXCEPTION: ",  e.getMessage());
-            }
-        } else {
-            setDefaultLocation();
-        }
-    }
-
-    private void setDefaultLocation() {
-        Log.d(TAG, "Setting location to default, Googleplex");
-        mLocation = new Location("");
-        mLocation.setLatitude(37.422);
-        mLocation.setLongitude(-122.084);
-        getTweetList();
-    }
-
-    private void getTweetList() {
-        new TwitterQueryTask().execute(mLocation);
-    }
-
-
-    // TODO: Create functionality to refresh tweets and reload map and/or RecycleView list
-    // TODO: Create functionality to set preferences for radius, number of tweets to show, etc.
-
-    public class TwitterQueryTask extends AsyncTask<Location, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // TODO: Set loading indicator to visible
-        }
-
-        @Override
-        protected void onPostExecute(Void voidObj) {
-            super.onPostExecute(voidObj);
-            // TODO: As soon as loading is complete, hide the loading indicator
-            if (currentFragment == null) displaySelectedScreen(R.id.nav_tweet_map);
-        }
-
-        @Override
-        protected Void doInBackground(Location... mLocation) {
-            TwitterService.getToken();
-            tweetList = TwitterService.getTweets(mLocation[0], 1, 100);
-            return null;
-        }
-    }
 
     @Override
     public void onFragmentInteraction(Uri uri) {

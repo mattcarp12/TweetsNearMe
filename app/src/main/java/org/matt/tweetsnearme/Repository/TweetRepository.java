@@ -7,7 +7,7 @@ import org.matt.tweetsnearme.Network.TwitterService;
 
 import java.util.List;
 
-import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 
 public class TweetRepository {
@@ -22,7 +22,7 @@ public class TweetRepository {
         this.locationService = locationService;
     }
 
-    public Flowable<List<Tweet>> getTweets() {
+    public Single<List<Tweet>> getTweets() {
         return twitterService.getTweets(locationService.getCurrentLocation(), 5, 10);
     }
 }

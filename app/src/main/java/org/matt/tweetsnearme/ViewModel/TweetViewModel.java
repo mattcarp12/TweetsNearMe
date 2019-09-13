@@ -1,9 +1,6 @@
 package org.matt.tweetsnearme.ViewModel;
 
-import android.content.Context;
-
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.LiveDataReactiveStreams;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import org.matt.tweetsnearme.Model.Tweet;
@@ -11,17 +8,44 @@ import org.matt.tweetsnearme.Repository.TweetRepository;
 
 import java.util.List;
 
+import io.reactivex.SingleObserver;
+import io.reactivex.disposables.Disposable;
+
 public class TweetViewModel extends ViewModel {
 
     private TweetRepository tweetRepository;
-    private LiveData<List<Tweet>> tweetList;
+    private MutableLiveData<List<Tweet>> tweetList;
 
-    public TweetViewModel(Context context, TweetRepository tweetRepository) {
+    public TweetViewModel(TweetRepository tweetRepository) {
         this.tweetRepository = tweetRepository;
     }
 
-    public void init() {
-        tweetList = LiveDataReactiveStreams.fromPublisher(tweetRepository.getTweets());
+    public MutableLiveData<List<Tweet>> getTweetList() {
+        if (tweetList == null) {
+            tweetList = new MutableLiveData<List<Tweet>>();
+        }
+        updateTweetList();
+        return tweetList;
     }
 
+    public void updateTweetList() {
+        tweetRepository
+                .getTweets()
+                .subscribe(new SingleObserver<List<Tweet>>() {
+                    @Override
+                    public void onSuccess(List<Tweet> tweets) {
+                        tweetList.setValue(tweets);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+                });
+    }
 }

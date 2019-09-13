@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.matt.tweetsnearme.Adapters.TweetMarkerAdapter;
 import org.matt.tweetsnearme.Model.Tweet;
+import org.matt.tweetsnearme.ViewModel.TweetViewModel;
 
 public class TweetMapFragment extends Fragment implements
         OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
@@ -34,6 +36,7 @@ public class TweetMapFragment extends Fragment implements
     private MainActivity mainActivity;
     private LatLng mLatLng;
     private TweetMarkerAdapter tweetMarkerAdapter;
+    private TweetViewModel mViewModel;
 
     public TweetMapFragment() {
         // Required empty public constructor
@@ -42,11 +45,18 @@ public class TweetMapFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mViewModel = ViewModelProvider.AndroidViewModelFactory
+                .getInstance(getActivity().getApplication())
+                .create(TweetViewModel.class);
+
+        // TODO : Set observer for ViewModel.
+        // TODO: Override onChange() method to update map.
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // TODO : Research difference of onCreate, onCreateView, and onViewCreated.
         // Inflate the layout for this fragment
         mainActivity = (MainActivity) getActivity();
         tweetMarkerAdapter = new TweetMarkerAdapter(mainActivity);

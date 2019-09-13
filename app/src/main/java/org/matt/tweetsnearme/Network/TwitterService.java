@@ -9,7 +9,7 @@ import org.matt.tweetsnearme.Model.Tweet;
 import java.io.IOException;
 import java.util.List;
 
-import io.reactivex.Flowable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Credentials;
@@ -28,6 +28,9 @@ public class TwitterService {
     private static final String TWITTER_API_CONSUMER_SECRET_KEY = "k8bVfThsns8392bvdbFF2Ule2dFEKfMO7PjEwOfE1bWgleEnNI";
     private static final String credentials = Credentials.basic(TWITTER_API_CONSUMER_KEY, TWITTER_API_CONSUMER_SECRET_KEY);
     private static OAuthToken token;
+
+    // TODO : Make methods to create OkHttpClient and TwitterApi
+    // TODO : Make custom serializer to flatten JSON
 
     private static OkHttpClient okHttpClient = new OkHttpClient.Builder().addInterceptor(new Interceptor() {
         @Override
@@ -70,27 +73,7 @@ public class TwitterService {
                         error -> System.out.println("Error occured: " + error));
     }
 
-    /*public static List<Tweet> getTweets(Location currLoc, int radius, int maxTweets) {
-        ArrayList<Tweet> tweetList = new ArrayList<>();
-        String geoCodeString = currLoc.getLatitude() + "," +
-                currLoc.getLongitude() + "," +
-                radius + "mi";
-        try {
-            Response<Search> response = twitterApi.getTweets(
-                    geoCodeString, maxTweets, 1).execute();
-            if (response.isSuccessful() && response.body() != null) {
-                tweetList = (ArrayList) response.body().getTweets();
-                return tweetList;
-            } else {
-                Log.d(TAG, "Twitter request unsuccessful");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return tweetList;
-    }*/
-
-    public Flowable<List<Tweet>> getTweets(Location currLoc, int radius, int maxTweets) {
+    public Single<List<Tweet>> getTweets(Location currLoc, int radius, int maxTweets) {
         String geoCodeString = currLoc.getLatitude() + "," +
                 currLoc.getLongitude() + "," +
                 radius + "mi";
