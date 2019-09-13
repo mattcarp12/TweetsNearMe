@@ -1,9 +1,12 @@
 package org.matt.tweetsnearme.Model;
 
+import androidx.room.Entity;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+@Entity(tableName = "coordinates")
 public class Coordinates {
 
     public static final int INDEX_LONGITUDE = 0;

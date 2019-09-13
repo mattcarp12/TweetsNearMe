@@ -154,6 +154,10 @@ public class MainActivity extends AppCompatActivity
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
             Log.d(TAG, "permission already given");
+
+            // default show the tweet map on system initialization
+            displaySelectedScreen(R.id.nav_tweet_map);
+
         } else { // If don't currently have permission, then request permission
             if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -198,12 +202,12 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         }
+        // default show the tweet map on system initialization
+        displaySelectedScreen(R.id.nav_tweet_map);
     }
-
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
     }
 
 }

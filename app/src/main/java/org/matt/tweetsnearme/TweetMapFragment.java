@@ -1,6 +1,7 @@
 package org.matt.tweetsnearme;
 
 import android.content.Context;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,16 +26,18 @@ import org.matt.tweetsnearme.Adapters.TweetMarkerAdapter;
 import org.matt.tweetsnearme.Model.Tweet;
 import org.matt.tweetsnearme.ViewModel.TweetViewModel;
 
+import java.util.List;
+
 public class TweetMapFragment extends Fragment implements
         OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
 
+    private static final String TAG = TweetMapFragment.class.getSimpleName();
     private OnFragmentInteractionListener mListener;
     private GoogleMap.InfoWindowAdapter infoWindowAdapter;
-    private static final String TAG = TweetMapFragment.class.getSimpleName();
     private GoogleMap mMap;
-    private MainActivity mainActivity;
     private LatLng mLatLng;
+    private Location mLocation;
     private TweetMarkerAdapter tweetMarkerAdapter;
     private TweetViewModel mViewModel;
 
@@ -51,6 +54,13 @@ public class TweetMapFragment extends Fragment implements
 
         // TODO : Set observer for ViewModel.
         // TODO: Override onChange() method to update map.
+
+        mViewModel.getTweetList().observe(this, tweets -> {
+            mLocation = mViewModel.getLocation();
+            setMapPosition();
+            addMapMarkers(tweets);
+        });
+
     }
 
     @Override
@@ -58,8 +68,7 @@ public class TweetMapFragment extends Fragment implements
                              Bundle savedInstanceState) {
         // TODO : Research difference of onCreate, onCreateView, and onViewCreated.
         // Inflate the layout for this fragment
-        mainActivity = (MainActivity) getActivity();
-        tweetMarkerAdapter = new TweetMarkerAdapter(mainActivity);
+        tweetMarkerAdapter = new TweetMarkerAdapter(getActivity());
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
 
@@ -68,7 +77,6 @@ public class TweetMapFragment extends Fragment implements
         super.onViewCreated(view, savedInstanceState);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
-
         mapFragment.getMapAsync(TweetMapFragment.this);
     }
 
@@ -81,22 +89,21 @@ public class TweetMapFragment extends Fragment implements
         mMap = googleMap;
         mMap.setInfoWindowAdapter(tweetMarkerAdapter);
         mMap.setOnInfoWindowClickListener(this);
-        setMapPosition();
-        addMapMarkers();
+
+        /*setMapPosition();
+        addMapMarkers();*/
     }
 
     private void setMapPosition() {
-        mLatLng = new LatLng(mainActivity.mLocation.getLatitude(),
-                             mainActivity.mLocation.getLongitude());
+        mLatLng = new LatLng(mLocation.getLatitude(),
+                mLocation.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLatLng, 13));
     }
 
-    private void addMapMarkers() {
+    private void addMapMarkers(List<Tweet> tweets) {
         // TODO: Make custom map marker for tweets
         // TODO: Custom marker should show tweet, username, and distance from current location
-
-
-        for (Tweet tweet : mainActivity.tweetList) {
+        for (Tweet tweet : tweets) {
             if (tweet.getCoordinates() != null)
                 mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(tweet.getCoordinates().getLatitude(), tweet.getCoordinates().getLongitude()))
@@ -106,7 +113,6 @@ public class TweetMapFragment extends Fragment implements
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-
     }
 
     @Override

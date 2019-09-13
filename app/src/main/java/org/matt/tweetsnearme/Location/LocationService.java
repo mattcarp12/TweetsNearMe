@@ -16,9 +16,8 @@ public class LocationService {
     private Location mLocation;
     private Boolean mLocationPermissionGranted;
     private FusedLocationProviderClient fusedLocationClient;
-    private Context context;
 
-    public LocationService(Context context, boolean mLocationPermissionGranted) {
+    public LocationService(Context context) {
         this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
         this.mLocationPermissionGranted = mLocationPermissionGranted;
     }

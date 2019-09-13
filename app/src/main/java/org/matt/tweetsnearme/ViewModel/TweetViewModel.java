@@ -1,7 +1,10 @@
 package org.matt.tweetsnearme.ViewModel;
 
+import android.app.Application;
+import android.location.Location;
+
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import org.matt.tweetsnearme.Model.Tweet;
 import org.matt.tweetsnearme.Repository.TweetRepository;
@@ -11,21 +14,27 @@ import java.util.List;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 
-public class TweetViewModel extends ViewModel {
+public class TweetViewModel extends AndroidViewModel {
 
     private TweetRepository tweetRepository;
     private MutableLiveData<List<Tweet>> tweetList;
+    private Location mLocation;
 
-    public TweetViewModel(TweetRepository tweetRepository) {
-        this.tweetRepository = tweetRepository;
+    public TweetViewModel(Application application) {
+        super(application);
+        this.tweetRepository = new TweetRepository(application);
     }
 
     public MutableLiveData<List<Tweet>> getTweetList() {
         if (tweetList == null) {
-            tweetList = new MutableLiveData<List<Tweet>>();
+            tweetList = new MutableLiveData<>();
         }
         updateTweetList();
         return tweetList;
+    }
+
+    public Location getLocation() {
+        return mLocation;
     }
 
     public void updateTweetList() {
@@ -35,6 +44,7 @@ public class TweetViewModel extends ViewModel {
                     @Override
                     public void onSuccess(List<Tweet> tweets) {
                         tweetList.setValue(tweets);
+                        updateLocation();
                     }
 
                     @Override
@@ -47,5 +57,9 @@ public class TweetViewModel extends ViewModel {
 
                     }
                 });
+    }
+
+    private void updateLocation() {
+        mLocation = tweetRepository.getLocation();
     }
 }
