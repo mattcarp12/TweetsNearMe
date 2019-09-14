@@ -36,6 +36,7 @@ public class TweetListFragment extends Fragment {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private TweetViewModel mViewModel;
+    
 
     public TweetListFragment() {
         // Required empty public constructor
@@ -55,6 +56,7 @@ public class TweetListFragment extends Fragment {
         mViewModel = ViewModelProvider.AndroidViewModelFactory
                 .getInstance(getActivity().getApplication())
                 .create(TweetViewModel.class);
+
     }
 
     @Override

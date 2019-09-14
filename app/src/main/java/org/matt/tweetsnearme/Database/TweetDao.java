@@ -9,10 +9,12 @@ import org.matt.tweetsnearme.Model.Tweet;
 
 import java.util.List;
 
+import static androidx.room.OnConflictStrategy.IGNORE;
+
 @Dao
 public interface TweetDao {
 
-    @Insert
+    @Insert(onConflict = IGNORE)
     void insert(Tweet tweet);
 
     @Query("DELETE FROM Tweet")
