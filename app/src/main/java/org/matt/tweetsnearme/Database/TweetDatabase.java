@@ -5,12 +5,13 @@ import android.content.Context;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 
-import org.matt.tweetsnearme.Model.Coordinates;
+import org.matt.tweetsnearme.Model.Converters;
 import org.matt.tweetsnearme.Model.Tweet;
-import org.matt.tweetsnearme.Model.User;
 
-@Database(entities = {Tweet.class, User.class, Coordinates.class}, version = 1)
+@Database(entities = {Tweet.class}, version = 1, exportSchema = false)
+@TypeConverters({Converters.class})
 public abstract class TweetDatabase extends RoomDatabase {
 
     private static volatile TweetDatabase INSTANCE;

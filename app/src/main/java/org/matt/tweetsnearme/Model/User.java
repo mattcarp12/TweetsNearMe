@@ -1,23 +1,28 @@
 package org.matt.tweetsnearme.Model;
 
-import androidx.room.Entity;
-
 import com.google.gson.annotations.SerializedName;
 
-@Entity(tableName = "users")
 public class User {
 
-    @SerializedName("name")
-    private String name;
+    @SerializedName("screen_name")
+    public String name;
 
     @SerializedName("profile_image_url_https")
-    private String profileImageUrlHttps;
+    public String profileImageUrl;
 
     public String getName() {
         return name;
     }
 
-    public String getProfileImageUrlHttps() {
-        return profileImageUrlHttps;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 }

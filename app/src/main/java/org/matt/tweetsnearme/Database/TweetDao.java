@@ -15,10 +15,10 @@ public interface TweetDao {
     @Insert
     void insert(Tweet tweet);
 
-    @Query("DELETE FROM tweets")
+    @Query("DELETE FROM Tweet")
     void deleteAll();
 
-    @Query("SELECT * from tweets")
+    @Query("SELECT * from Tweet")
     LiveData<List<Tweet>> getAllTweets();
 
 }

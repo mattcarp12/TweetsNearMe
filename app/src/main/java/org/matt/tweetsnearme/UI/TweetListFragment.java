@@ -1,4 +1,4 @@
-package org.matt.tweetsnearme;
+package org.matt.tweetsnearme.UI;
 
 import android.content.Context;
 import android.net.Uri;
@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.matt.tweetsnearme.Adapters.TweetListAdapter;
+import org.matt.tweetsnearme.R;
 import org.matt.tweetsnearme.ViewModel.TweetViewModel;
 
 

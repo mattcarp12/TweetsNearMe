@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -42,8 +41,8 @@ public class TweetMarkerAdapter implements GoogleMap.InfoWindowAdapter {
         ((TextView) view.findViewById(R.id.tweet_distance)).setText("5");
         ((TextView) view.findViewById(R.id.tweet_text)).setText(tweet.getText());
         Picasso.with(context)
-                .load(tweet.getUser().getProfileImageUrlHttps())
-                .into((ImageView) view.findViewById(R.id.tweet_author_image), new MarkerCallback(marker));
+                .load(tweet.getUser().getProfileImageUrl())
+                .into(view.findViewById(R.id.tweet_author_image), new MarkerCallback(marker));
 
     }
 

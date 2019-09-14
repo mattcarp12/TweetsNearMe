@@ -47,7 +47,7 @@ public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.MyVi
         holder.tweetUserName.setText(currTweet.getUser().getName());
         holder.tweetText.setText(currTweet.getText());
         holder.tweetDistance.setText("5");
-        Picasso.with(context).load(currTweet.getUser().getProfileImageUrlHttps()).into(holder.tweetUserImage);
+        Picasso.with(context).load(currTweet.getUser().getProfileImageUrl()).into(holder.tweetUserImage);
 
     }
 

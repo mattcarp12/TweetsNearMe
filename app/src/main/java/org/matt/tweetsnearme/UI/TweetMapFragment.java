@@ -1,4 +1,4 @@
-package org.matt.tweetsnearme;
+package org.matt.tweetsnearme.UI;
 
 import android.content.Context;
 import android.location.Location;
@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.matt.tweetsnearme.Adapters.TweetMarkerAdapter;
 import org.matt.tweetsnearme.Model.Tweet;
+import org.matt.tweetsnearme.R;
 import org.matt.tweetsnearme.ViewModel.TweetViewModel;
 
 import java.util.List;
@@ -104,7 +105,7 @@ public class TweetMapFragment extends Fragment implements
         // TODO: Make custom map marker for tweets
         // TODO: Custom marker should show tweet, username, and distance from current location
         for (Tweet tweet : tweets) {
-            if (tweet.getCoordinates() != null)
+            if (tweet.coordinates != null)
                 mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(tweet.getCoordinates().getLatitude(), tweet.getCoordinates().getLongitude()))
                 ).setTag(tweet);
