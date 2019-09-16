@@ -18,13 +18,16 @@ import java.util.List;
 
 
 public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.MyViewHolder> {
-    private List<Tweet> mDataset;
+    private List<Tweet> tweetList;
     private Context context;
 
-    // Provide a suitable constructor (depends on the kind of dataset)
-    public TweetListAdapter(List<Tweet> myDataset, Context context) {
-        mDataset = myDataset;
+    public TweetListAdapter(Context context) {
         this.context = context;
+    }
+
+    public void setTweetList(List<Tweet> tweetList) {
+        this.tweetList = tweetList;
+        notifyItemRangeInserted(0, tweetList.size());
     }
 
     // Create new views (invoked by the layout manager)
@@ -37,18 +40,13 @@ public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.MyVi
         return new MyViewHolder(myLayout);
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        //holder.textView.setText(mDataset.get(position).text);
-        Tweet currTweet = mDataset.get(position);
+        Tweet currTweet = tweetList.get(position);
         holder.tweetUserName.setText(currTweet.getUser().getName());
         holder.tweetText.setText(currTweet.getText());
         holder.tweetDistance.setText("5");
         Picasso.with(context).load(currTweet.getUser().getProfileImageUrl()).into(holder.tweetUserImage);
-
     }
 
     // Provide a reference to the views for each data item
@@ -73,6 +71,7 @@ public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.MyVi
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataset.size();
+        return tweetList == null ? 0 : tweetList.size();
     }
+
 }

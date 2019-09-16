@@ -57,7 +57,7 @@ public class TweetMapFragment extends Fragment implements
         // TODO: Override onChange() method to update map.
 
         mViewModel.getTweetList().observe(this, tweets -> {
-            mLocation = mViewModel.getLocation();
+            //mLocation = mViewModel.getLocation();
             setMapPosition();
             addMapMarkers(tweets);
         });

@@ -55,7 +55,7 @@ public class TwitterService {
             .build()
             .create(TwitterApi.class);
 
-    public void getToken() {
+    public void getToken2() {
         twitterApi.postCredentials("client_credentials")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -63,14 +63,24 @@ public class TwitterService {
                         error -> System.out.println("Error occured: " + error));
     }
 
-    public Single<List<Tweet>> getTweets(Location currLoc, int radius, int maxTweets) {
-        String geoCodeString = currLoc.getLatitude() + "," +
-                currLoc.getLongitude() + "," +
-                radius + "mi";
-        return twitterApi.getTweets(geoCodeString, maxTweets, 1)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map(search -> search.getTweets());
+    public Single<OAuthToken> getToken() {
+        if (token != null) return Single.just(token);
+        else return twitterApi.postCredentials("client_credentials")
+                .doOnSuccess(oAuthToken -> token = oAuthToken);
+    }
+
+    public Single<List<Tweet>> getTweets(Single<Location> currLoc, int radius, int maxTweets) {
+        return currLoc.flatMap(location -> {
+            String geoCodeString = location.getLatitude() + "," +
+                    location.getLongitude() + "," +
+                    radius + "mi";
+            return twitterApi.getTweets(geoCodeString, maxTweets, 1)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .map(search -> search.getTweets());
+        });
+
+        return getToken().flatMap()
     }
 
 }

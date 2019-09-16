@@ -18,63 +18,44 @@ import org.matt.tweetsnearme.Adapters.TweetListAdapter;
 import org.matt.tweetsnearme.R;
 import org.matt.tweetsnearme.ViewModel.TweetViewModel;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link TweetListFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link TweetListFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class TweetListFragment extends Fragment {
 
 
     private OnFragmentInteractionListener mListener;
     private MainActivity mainActivity;
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private TweetListAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private TweetViewModel mViewModel;
-    
+
 
     public TweetListFragment() {
         // Required empty public constructor
     }
 
-
-    public static TweetListFragment newInstance() {
-        TweetListFragment fragment = new TweetListFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mViewModel = ViewModelProvider.AndroidViewModelFactory
-                .getInstance(getActivity().getApplication())
-                .create(TweetViewModel.class);
-
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_recyclerview, container, false);
         mainActivity = (MainActivity) getActivity();
+        recyclerView = rootView.findViewById(R.id.rv_tweet_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(mainActivity));
+        mAdapter = new TweetListAdapter(mainActivity);
+        recyclerView.setAdapter(mAdapter);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_recyclerview, container, false);
+        return rootView;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        recyclerView = mainActivity.findViewById(R.id.rv_tweet_list);
-        layoutManager = new LinearLayoutManager(mainActivity);
-        recyclerView.setLayoutManager(layoutManager);
-        mAdapter = new TweetListAdapter(mainActivity.tweetList, mainActivity);
-        recyclerView.setAdapter(mAdapter);
+        mViewModel = ViewModelProvider.AndroidViewModelFactory
+                .getInstance(getActivity().getApplication())
+                .create(TweetViewModel.class);
+        mViewModel.getTweetList().observe(this, tweets ->
+                mAdapter.setTweetList(tweets)
+        );
+
     }
 
     @Override
