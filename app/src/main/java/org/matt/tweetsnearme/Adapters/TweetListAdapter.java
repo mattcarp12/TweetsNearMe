@@ -27,7 +27,7 @@ public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.MyVi
 
     public void setTweetList(List<Tweet> tweetList) {
         this.tweetList = tweetList;
-        notifyItemRangeInserted(0, tweetList.size());
+        notifyDataSetChanged();
     }
 
     // Create new views (invoked by the layout manager)

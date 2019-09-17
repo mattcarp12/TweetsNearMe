@@ -24,7 +24,6 @@ public class TweetRepository {
     private static final String TAG = TweetRepository.class.getSimpleName();
     private TweetDao tweetDao;
     private TwitterService twitterService;
-    private Location mLocation;
     private Boolean mLocationPermissionGranted;
     private FusedLocationProviderClient fusedLocationClient;
 
@@ -38,23 +37,23 @@ public class TweetRepository {
     }
 
     public Single<List<Tweet>> getTweets() {
-        return twitterService.getTweets(getLocation(), 5, 10);
+        return twitterService.getTweets(getLocation(), 5, 100);
     }
 
     private Location getDefaultLocation() {
-        mLocation = new Location("");
+        Location mLocation = new Location("");
         mLocation.setLatitude(37.422);
         mLocation.setLongitude(-122.084);
         return mLocation;
     }
 
-    private Single<Location> getLocation() {
+    public Single<Location> getLocation() {
         return Single.create(emitter -> {
             if (!mLocationPermissionGranted) emitter.onSuccess(getDefaultLocation());
             else {
                 fusedLocationClient.getLastLocation()
                         .addOnSuccessListener(location -> {
-                            Location currLoc = location == null ? location : getDefaultLocation();
+                            Location currLoc = location != null ? location : getDefaultLocation();
                             try {
                                 emitter.onSuccess(currLoc);
                             } catch (Exception e) {

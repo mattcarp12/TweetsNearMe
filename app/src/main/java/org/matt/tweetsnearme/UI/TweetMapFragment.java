@@ -34,13 +34,10 @@ public class TweetMapFragment extends Fragment implements
 
 
     private static final String TAG = TweetMapFragment.class.getSimpleName();
-    private OnFragmentInteractionListener mListener;
-    private GoogleMap.InfoWindowAdapter infoWindowAdapter;
     private GoogleMap mMap;
-    private LatLng mLatLng;
-    private Location mLocation;
     private TweetMarkerAdapter tweetMarkerAdapter;
     private TweetViewModel mViewModel;
+    private OnFragmentInteractionListener mListener;
 
     public TweetMapFragment() {
         // Required empty public constructor
@@ -49,26 +46,12 @@ public class TweetMapFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewModel = ViewModelProvider.AndroidViewModelFactory
-                .getInstance(getActivity().getApplication())
-                .create(TweetViewModel.class);
-
-        // TODO : Set observer for ViewModel.
-        // TODO: Override onChange() method to update map.
-
-        mViewModel.getTweetList().observe(this, tweets -> {
-            //mLocation = mViewModel.getLocation();
-            setMapPosition();
-            addMapMarkers(tweets);
-        });
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // TODO : Research difference of onCreate, onCreateView, and onViewCreated.
-        // Inflate the layout for this fragment
         tweetMarkerAdapter = new TweetMarkerAdapter(getActivity());
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
@@ -79,31 +62,33 @@ public class TweetMapFragment extends Fragment implements
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(TweetMapFragment.this);
+
+        mViewModel = ViewModelProvider.AndroidViewModelFactory
+                .getInstance(getActivity().getApplication())
+                .create(TweetViewModel.class);
+
+        mViewModel.getTweetList().observe(this, tweets -> addMapMarkers(tweets));
+
+        mViewModel.getCurrentLocation().observe(this, location -> setMapPosition(location));
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         // TODO: show radius of 1 mile where tweets will be located
         // TODO: Set altitude properly so that zooms into 1 mile radius
-
         Log.d(TAG, "Map is ready!");
         mMap = googleMap;
         mMap.setInfoWindowAdapter(tweetMarkerAdapter);
         mMap.setOnInfoWindowClickListener(this);
-
-        /*setMapPosition();
-        addMapMarkers();*/
     }
 
-    private void setMapPosition() {
-        mLatLng = new LatLng(mLocation.getLatitude(),
+    private void setMapPosition(Location mLocation) {
+        LatLng mLatLng = new LatLng(mLocation.getLatitude(),
                 mLocation.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLatLng, 13));
     }
 
     private void addMapMarkers(List<Tweet> tweets) {
-        // TODO: Make custom map marker for tweets
-        // TODO: Custom marker should show tweet, username, and distance from current location
         for (Tweet tweet : tweets) {
             if (tweet.coordinates != null)
                 mMap.addMarker(new MarkerOptions()

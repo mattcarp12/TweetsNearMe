@@ -30,7 +30,6 @@ public class TwitterService {
     private static OAuthToken token;
 
     // TODO : Make methods to create OkHttpClient and TwitterApi
-    // TODO : Make custom deserializer to flatten JSON
 
     private static OkHttpClient okHttpClient = new OkHttpClient.Builder().addInterceptor(new Interceptor() {
         @Override
@@ -53,14 +52,13 @@ public class TwitterService {
             .build()
             .create(TwitterApi.class);
 
-    public Single<OAuthToken> getToken() {
+    private Single<OAuthToken> getToken() {
+        // TODO : Refresh token if no longer valid
         if (token != null) return Single.just(token);
         else return twitterApi.postCredentials("client_credentials");
-        //.doOnSuccess(oAuthToken -> token = oAuthToken);
     }
 
     public Single<List<Tweet>> getTweets(Single<Location> currLoc, int radius, int maxTweets) {
-
         return getToken()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

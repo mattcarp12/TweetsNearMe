@@ -1,6 +1,7 @@
 package org.matt.tweetsnearme.ViewModel;
 
 import android.app.Application;
+import android.location.Location;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
@@ -14,6 +15,7 @@ public class TweetViewModel extends AndroidViewModel {
 
     private TweetRepository tweetRepository;
     private MutableLiveData<List<Tweet>> tweetList;
+    private MutableLiveData<Location> currentLocation;
 
     public TweetViewModel(Application application) {
         super(application);
@@ -33,5 +35,24 @@ public class TweetViewModel extends AndroidViewModel {
                 .getTweets()
                 .subscribe(tweets -> tweetList.setValue(tweets),
                         e -> e.printStackTrace());
+    }
+
+    public MutableLiveData<Location> getCurrentLocation() {
+        if (currentLocation == null) {
+            currentLocation = new MutableLiveData<>();
+        }
+        updateCurrentLocation();
+        return currentLocation;
+    }
+
+    private void updateCurrentLocation() {
+        tweetRepository
+                .getLocation()
+                .subscribe(location -> currentLocation.setValue(location));
+    }
+
+    public void update() {
+        updateCurrentLocation();
+        updateTweetList();
     }
 }

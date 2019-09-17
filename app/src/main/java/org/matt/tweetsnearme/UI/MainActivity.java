@@ -1,6 +1,5 @@
 package org.matt.tweetsnearme.UI;
 
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,16 +11,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.material.navigation.NavigationView;
 
-import org.matt.tweetsnearme.Model.Tweet;
 import org.matt.tweetsnearme.R;
 import org.matt.tweetsnearme.ViewModel.TweetViewModel;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -29,18 +24,12 @@ public class MainActivity extends AppCompatActivity
         TweetListFragment.OnFragmentInteractionListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    Location mLocation;
-    List<Tweet> tweetList;
     TweetViewModel mViewModel;
-    private boolean mLocationPermissionGranted;
-    private FusedLocationProviderClient fusedLocationClient;
-    private Integer currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mLocationPermissionGranted = getIntent().getBooleanExtra("LOCATION_PERMISSION_GRANTED", false);
 
         // Set toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -55,7 +44,9 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        mViewModel = ViewModelProvider.AndroidViewModelFactory
+                .getInstance(getApplication())
+                .create(TweetViewModel.class);
 
     }
 
@@ -75,7 +66,7 @@ public class MainActivity extends AppCompatActivity
                 return true;
 
             case R.id.action_refresh:
-                // TODO : refresh tweet list
+                mViewModel.update();
                 return true;
 
             default:
@@ -103,8 +94,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void displaySelectedScreen(int itemId) {
-        currentFragment = itemId;
-        //creating fragment object
         Fragment fragment = null;
 
         //initializing the fragment object which is selected
@@ -124,7 +113,6 @@ public class MainActivity extends AppCompatActivity
                     .replace(R.id.fragment_content, fragment)
                     .commit();
         }
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
     }

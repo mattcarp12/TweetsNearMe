@@ -42,7 +42,6 @@ public class TweetListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(mainActivity));
         mAdapter = new TweetListAdapter(mainActivity);
         recyclerView.setAdapter(mAdapter);
-        // Inflate the layout for this fragment
         return rootView;
     }
 
@@ -55,13 +54,11 @@ public class TweetListFragment extends Fragment {
         mViewModel.getTweetList().observe(this, tweets ->
                 mAdapter.setTweetList(tweets)
         );
-
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
