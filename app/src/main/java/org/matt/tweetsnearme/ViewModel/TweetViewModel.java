@@ -10,9 +10,6 @@ import org.matt.tweetsnearme.Repository.TweetRepository;
 
 import java.util.List;
 
-import io.reactivex.SingleObserver;
-import io.reactivex.disposables.Disposable;
-
 public class TweetViewModel extends AndroidViewModel {
 
     private TweetRepository tweetRepository;
@@ -34,21 +31,7 @@ public class TweetViewModel extends AndroidViewModel {
     private void updateTweetList() {
         tweetRepository
                 .getTweets()
-                .subscribe(new SingleObserver<List<Tweet>>() {
-                    @Override
-                    public void onSuccess(List<Tweet> tweets) {
-                        tweetList.setValue(tweets);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-                });
+                .subscribe(tweets -> tweetList.setValue(tweets),
+                        e -> e.printStackTrace());
     }
 }

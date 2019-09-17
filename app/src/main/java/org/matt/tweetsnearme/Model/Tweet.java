@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey;
 public class Tweet {
 
     @PrimaryKey
-    public int id;
+    public long id;
 
     public String text;
 
@@ -18,7 +18,7 @@ public class Tweet {
     @Embedded
     public Coordinates coordinates;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
