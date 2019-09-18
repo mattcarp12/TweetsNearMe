@@ -20,6 +20,8 @@ public class TweetViewModel extends AndroidViewModel {
     public TweetViewModel(Application application) {
         super(application);
         this.tweetRepository = new TweetRepository(application);
+        tweetList = new MutableLiveData<>();
+        currentLocation = new MutableLiveData<>();
     }
 
     public MutableLiveData<List<Tweet>> getTweetList() {
@@ -48,7 +50,8 @@ public class TweetViewModel extends AndroidViewModel {
     private void updateCurrentLocation() {
         tweetRepository
                 .getLocation()
-                .subscribe(location -> currentLocation.setValue(location));
+                .subscribe(location -> currentLocation.setValue(location),
+                        e -> e.printStackTrace());
     }
 
     public void update() {

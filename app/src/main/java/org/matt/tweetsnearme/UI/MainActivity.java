@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = MainActivity.class.getSimpleName();
     TweetViewModel mViewModel;
+    DrawerLayout drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         // Code for nav drawer
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -48,8 +49,8 @@ public class MainActivity extends AppCompatActivity
                 .getInstance(getApplication())
                 .create(TweetViewModel.class);
 
+        displaySelectedScreen(R.id.nav_tweet_map);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        drawer.closeDrawer(GravityCompat.START, true);
         displaySelectedScreen(item.getItemId());
         return true;
     }
@@ -113,8 +115,6 @@ public class MainActivity extends AppCompatActivity
                     .replace(R.id.fragment_content, fragment)
                     .commit();
         }
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
     }
 
     @Override

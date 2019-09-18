@@ -22,10 +22,8 @@ public class TweetListFragment extends Fragment {
 
 
     private OnFragmentInteractionListener mListener;
-    private MainActivity mainActivity;
     private RecyclerView recyclerView;
     private TweetListAdapter mAdapter;
-    private RecyclerView.LayoutManager layoutManager;
     private TweetViewModel mViewModel;
 
 
@@ -34,23 +32,36 @@ public class TweetListFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        /*
+         *   Initialize essential components that should be retained
+         *   when the fragment is paused, stopped, resumed.
+         * */
+        super.onCreate(savedInstanceState);
+        mViewModel = ViewModelProvider.AndroidViewModelFactory
+                .getInstance(getActivity().getApplication())
+                .create(TweetViewModel.class);
+        mAdapter = new TweetListAdapter(getContext());
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        /*
+         *   Where the view is created. Initialize the recyclerview here.
+         * */
         View rootView = inflater.inflate(R.layout.fragment_recyclerview, container, false);
-        mainActivity = (MainActivity) getActivity();
         recyclerView = rootView.findViewById(R.id.rv_tweet_list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(mainActivity));
-        mAdapter = new TweetListAdapter(mainActivity);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(mAdapter);
         return rootView;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mViewModel = ViewModelProvider.AndroidViewModelFactory
-                .getInstance(getActivity().getApplication())
-                .create(TweetViewModel.class);
+        /*
+         *   After view is created, subscribe to the list of tweets (livedata object)
+         *   that is located in the view model.
+         * */
         mViewModel.getTweetList().observe(this, tweets ->
                 mAdapter.setTweetList(tweets)
         );

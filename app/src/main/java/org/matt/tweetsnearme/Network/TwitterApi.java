@@ -23,6 +23,7 @@ public interface TwitterApi {
     @GET("/1.1/search/tweets.json")
     Single<Search> getTweets(@Query("geocode") String geocode,
                              @Query("count") int count,
-                             @Query("since_id") int sinceId);
+                             @Query("since_id") int sinceId,
+                             @Query("result_type") String resultType);
 
 }

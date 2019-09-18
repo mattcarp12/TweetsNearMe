@@ -30,11 +30,8 @@ public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.MyVi
         notifyDataSetChanged();
     }
 
-    // Create new views (invoked by the layout manager)
     @Override
-    public TweetListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
-                                                     int viewType) {
-        // create a new view
+    public TweetListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View myLayout = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.tweet_view, parent, false);
         return new MyViewHolder(myLayout);
@@ -49,29 +46,24 @@ public class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.MyVi
         Picasso.with(context).load(currTweet.getUser().getProfileImageUrl()).into(holder.tweetUserImage);
     }
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
-        public ImageView tweetUserImage;
-        public TextView tweetUserName;
-        public TextView tweetDistance;
-        public TextView tweetText;
+    @Override
+    public int getItemCount() {
+        return tweetList == null ? 0 : tweetList.size();
+    }
 
-        public MyViewHolder(View tweetLayout) {
+    static class MyViewHolder extends RecyclerView.ViewHolder {
+        ImageView tweetUserImage;
+        TextView tweetUserName;
+        TextView tweetDistance;
+        TextView tweetText;
+
+        MyViewHolder(View tweetLayout) {
             super(tweetLayout);
             tweetUserImage = tweetLayout.findViewById(R.id.tweet_author_image);
             tweetUserName = tweetLayout.findViewById(R.id.tweet_username);
             tweetDistance = tweetLayout.findViewById(R.id.tweet_distance);
             tweetText = tweetLayout.findViewById(R.id.tweet_text);
         }
-    }
-
-
-    // Return the size of your dataset (invoked by the layout manager)
-    @Override
-    public int getItemCount() {
-        return tweetList == null ? 0 : tweetList.size();
     }
 
 }

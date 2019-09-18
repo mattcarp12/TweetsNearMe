@@ -70,7 +70,7 @@ public class TwitterService {
                     String geoCodeString = location.getLatitude() + "," +
                             location.getLongitude() + "," +
                             radius + "mi";
-                    return twitterApi.getTweets(geoCodeString, maxTweets, 1)
+                    return twitterApi.getTweets(geoCodeString, maxTweets, 1, "recent")
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .map(search -> search.getTweets());
