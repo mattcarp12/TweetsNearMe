@@ -4,7 +4,6 @@ import android.content.Context;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -46,6 +45,7 @@ public class TweetMapFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mViewModel = ViewModelProviders.of(this).get(TweetViewModel.class);
     }
 
     @Override
@@ -62,13 +62,7 @@ public class TweetMapFragment extends Fragment implements
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(TweetMapFragment.this);
-
-        mViewModel = ViewModelProvider.AndroidViewModelFactory
-                .getInstance(getActivity().getApplication())
-                .create(TweetViewModel.class);
-
         mViewModel.getTweetList().observe(this, tweets -> addMapMarkers(tweets));
-
         mViewModel.getCurrentLocation().observe(this, location -> setMapPosition(location));
     }
 
@@ -76,7 +70,6 @@ public class TweetMapFragment extends Fragment implements
     public void onMapReady(GoogleMap googleMap) {
         // TODO: show radius of 1 mile where tweets will be located
         // TODO: Set altitude properly so that zooms into 1 mile radius
-        Log.d(TAG, "Map is ready!");
         mMap = googleMap;
         mMap.setInfoWindowAdapter(tweetMarkerAdapter);
         mMap.setOnInfoWindowClickListener(this);

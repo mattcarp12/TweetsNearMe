@@ -14,9 +14,9 @@ import org.matt.tweetsnearme.Model.Tweet;
 @TypeConverters({Converters.class})
 public abstract class TweetDatabase extends RoomDatabase {
 
-    private static volatile TweetDatabase INSTANCE;
-
     public abstract TweetDao tweetDao();
+
+    private static volatile TweetDatabase INSTANCE;
 
     public static TweetDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
@@ -30,6 +30,8 @@ public abstract class TweetDatabase extends RoomDatabase {
         }
         return INSTANCE;
     }
+
+
 }
 
 

@@ -9,18 +9,20 @@ import org.matt.tweetsnearme.Model.Tweet;
 
 import java.util.List;
 
+import io.reactivex.Completable;
+
 import static androidx.room.OnConflictStrategy.IGNORE;
 
 @Dao
 public interface TweetDao {
 
     @Insert(onConflict = IGNORE)
-    void insert(Tweet tweet);
+    Completable insertAll(List<Tweet> tweets);
 
     @Query("DELETE FROM Tweet")
-    void deleteAll();
+    Completable deleteAll();
 
     @Query("SELECT * from Tweet")
-    LiveData<List<Tweet>> getAllTweets();
+    LiveData<List<Tweet>> getTweets();
 
 }

@@ -3,6 +3,7 @@ package org.matt.tweetsnearme.Model;
 import androidx.room.TypeConverter;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Converters {
@@ -15,9 +16,18 @@ public class Converters {
         return coordinates;
     }
 
-
     @TypeConverter
     public static String coordinatesToString(List<Double> coordinates) {
         return coordinates.get(0) + "," + coordinates.get(1);
+    }
+
+    @TypeConverter
+    public static Date fromTimestamp(Long value) {
+        return value == null ? null : new Date(value);
+    }
+
+    @TypeConverter
+    public static Long dateToTimestamp(Date date) {
+        return date == null ? null : date.getTime();
     }
 }

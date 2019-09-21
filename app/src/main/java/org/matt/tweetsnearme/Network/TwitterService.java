@@ -9,8 +9,7 @@ import org.matt.tweetsnearme.Model.Tweet;
 import java.io.IOException;
 import java.util.List;
 
-import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Credentials;
 import okhttp3.Interceptor;
@@ -52,16 +51,15 @@ public class TwitterService {
             .build()
             .create(TwitterApi.class);
 
-    private Single<OAuthToken> getToken() {
+    private Observable<OAuthToken> getToken() {
         // TODO : Refresh token if no longer valid
-        if (token != null) return Single.just(token);
+        if (token != null) return Observable.just(token);
         else return twitterApi.postCredentials("client_credentials");
     }
 
-    public Single<List<Tweet>> getTweets(Single<Location> currLoc, int radius, int maxTweets) {
+    public Observable<List<Tweet>> getTweets(Observable<Location> currLoc, int radius, int maxTweets) {
         return getToken()
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(oAuthToken -> {
                     token = oAuthToken;
                     return currLoc;
@@ -71,9 +69,8 @@ public class TwitterService {
                             location.getLongitude() + "," +
                             radius + "mi";
                     return twitterApi.getTweets(geoCodeString, maxTweets, 1, "recent")
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .map(search -> search.getTweets());
+                            .map(search -> search.getTweets())
+                            .subscribeOn(Schedulers.io());
                 });
     }
 

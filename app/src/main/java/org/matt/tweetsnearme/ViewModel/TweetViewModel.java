@@ -4,6 +4,7 @@ import android.app.Application;
 import android.location.Location;
 
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import org.matt.tweetsnearme.Model.Tweet;
@@ -13,36 +14,28 @@ import java.util.List;
 
 public class TweetViewModel extends AndroidViewModel {
 
+    private static final String TAG = TweetViewModel.class.getSimpleName();
     private TweetRepository tweetRepository;
-    private MutableLiveData<List<Tweet>> tweetList;
+    private LiveData<List<Tweet>> tweetList;
     private MutableLiveData<Location> currentLocation;
 
     public TweetViewModel(Application application) {
         super(application);
         this.tweetRepository = new TweetRepository(application);
-        tweetList = new MutableLiveData<>();
+        tweetList = tweetRepository.getTweets();
         currentLocation = new MutableLiveData<>();
+        update();
     }
 
-    public MutableLiveData<List<Tweet>> getTweetList() {
-        if (tweetList == null) {
-            tweetList = new MutableLiveData<>();
-        }
-        updateTweetList();
+    public LiveData<List<Tweet>> getTweetList() {
         return tweetList;
     }
 
     private void updateTweetList() {
-        tweetRepository
-                .getTweets()
-                .subscribe(tweets -> tweetList.setValue(tweets),
-                        e -> e.printStackTrace());
+        tweetRepository.refreshTweets();
     }
 
     public MutableLiveData<Location> getCurrentLocation() {
-        if (currentLocation == null) {
-            currentLocation = new MutableLiveData<>();
-        }
         updateCurrentLocation();
         return currentLocation;
     }

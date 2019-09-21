@@ -10,8 +10,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.navigation.NavigationView;
 
@@ -45,9 +46,11 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
-        mViewModel = ViewModelProvider.AndroidViewModelFactory
+/*        mViewModel = ViewModelProvider.AndroidViewModelFactory
                 .getInstance(getApplication())
-                .create(TweetViewModel.class);
+                .create(TweetViewModel.class);*/
+
+        mViewModel = ViewModelProviders.of(this).get(TweetViewModel.class);
 
         displaySelectedScreen(R.id.nav_tweet_map);
     }
@@ -63,7 +66,8 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                // TODO: User choose the "Settings" item, show the app settings UI...
+                DialogFragment settingsFragment = new SettingsDialogFragment();
+                settingsFragment.show(getSupportFragmentManager(), "settings");
                 return true;
 
             case R.id.action_refresh:

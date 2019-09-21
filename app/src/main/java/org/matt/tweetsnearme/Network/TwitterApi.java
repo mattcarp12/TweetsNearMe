@@ -5,7 +5,7 @@ package org.matt.tweetsnearme.Network;
 import org.matt.tweetsnearme.Model.OAuthToken;
 import org.matt.tweetsnearme.Model.Search;
 
-import io.reactivex.Single;
+import io.reactivex.Observable;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -18,12 +18,12 @@ public interface TwitterApi {
 
     @FormUrlEncoded
     @POST("/oauth2/token")
-    Single<OAuthToken> postCredentials(@Field("grant_type") String grantType);
+    Observable<OAuthToken> postCredentials(@Field("grant_type") String grantType);
 
     @GET("/1.1/search/tweets.json")
-    Single<Search> getTweets(@Query("geocode") String geocode,
-                             @Query("count") int count,
-                             @Query("since_id") int sinceId,
-                             @Query("result_type") String resultType);
+    Observable<Search> getTweets(@Query("geocode") String geocode,
+                                 @Query("count") int count,
+                                 @Query("since_id") int sinceId,
+                                 @Query("result_type") String resultType);
 
 }
