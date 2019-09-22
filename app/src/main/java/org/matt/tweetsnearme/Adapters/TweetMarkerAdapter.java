@@ -1,7 +1,6 @@
 package org.matt.tweetsnearme.Adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -42,28 +41,24 @@ public class TweetMarkerAdapter implements GoogleMap.InfoWindowAdapter {
         ((TextView) view.findViewById(R.id.tweet_text)).setText(tweet.getText());
         Picasso.with(context)
                 .load(tweet.getUser().getProfileImageUrl())
-                .into(view.findViewById(R.id.tweet_author_image), new MarkerCallback(marker));
+                .into(view.findViewById(R.id.tweet_author_image), new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        if (marker.isInfoWindowShown()) {
+                            marker.showInfoWindow();
+                            marker.hideInfoWindow();
+                            marker.showInfoWindow();
+                        }
 
-    }
+                    }
 
-    static class MarkerCallback implements Callback {
-        Marker marker = null;
+                    @Override
+                    public void onError() {
+                        marker.showInfoWindow();
+                        marker.hideInfoWindow();
+                        marker.showInfoWindow();
+                    }
+                });
 
-        MarkerCallback(Marker marker) {
-            this.marker = marker;
-        }
-
-        @Override
-        public void onError() {
-            Log.e(getClass().getSimpleName(), "Error loading thumbnail!");
-        }
-
-        @Override
-        public void onSuccess() {
-            if (marker != null && marker.isInfoWindowShown()) {
-                marker.hideInfoWindow();
-                marker.showInfoWindow();
-            }
-        }
     }
 }

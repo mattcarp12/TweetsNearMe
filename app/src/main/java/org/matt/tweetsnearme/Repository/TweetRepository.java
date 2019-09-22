@@ -1,6 +1,7 @@
 package org.matt.tweetsnearme.Repository;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 
@@ -9,17 +10,18 @@ import androidx.lifecycle.LiveData;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.squareup.picasso.Picasso;
 
 import org.matt.tweetsnearme.Database.TweetDao;
 import org.matt.tweetsnearme.Database.TweetDatabase;
 import org.matt.tweetsnearme.Model.Tweet;
 import org.matt.tweetsnearme.Network.TwitterService;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -32,9 +34,11 @@ public class TweetRepository {
     private Boolean mLocationPermissionGranted;
     private FusedLocationProviderClient fusedLocationClient;
     private Date lastTweetUpdate;
+    private Context context;
 
 
     public TweetRepository(Application application) {
+        this.context = application;
         this.tweetDao = TweetDatabase.getDatabase(application).tweetDao();
         this.twitterService = new TwitterService();
         this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(application);
@@ -46,14 +50,14 @@ public class TweetRepository {
         return tweetDao.getTweets();
     }
 
-    public void refreshTweets() {
+    public void refreshTweets(boolean forceRefresh) {
         Date currDate = new Date();
-        if (lastTweetUpdate == null ||
-                (currDate.getTime() - lastTweetUpdate.getTime()) / 60000 > FRESH_TIMEOUT_IN_MINUTES) {
+        if (lastTweetUpdate == null
+                || (currDate.getTime() - lastTweetUpdate.getTime()) / 60000 > FRESH_TIMEOUT_IN_MINUTES
+                || forceRefresh) {
             refreshTweetDatabase();
             lastTweetUpdate = currDate;
         }
-
     }
 
     private void refreshTweetDatabase() {
@@ -65,17 +69,11 @@ public class TweetRepository {
                     return twitterService.getTweets(getLocation(), 5, 100);
                 })
                 .flatMap(tweets -> {
+                    tweets.forEach(tweet -> Picasso.with(context).load(tweet.getUser().getProfileImageUrl()));
                     return Observable.fromCallable(() -> tweetDao.insertAll(tweets));
                 })
                 .subscribeOn(Schedulers.io())
                 .subscribe(completable -> completable.subscribe());
-    }
-
-    private Date getMaxRefreshTime(Date currentDate) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(currentDate);
-        cal.add(Calendar.MINUTE, -FRESH_TIMEOUT_IN_MINUTES);
-        return cal.getTime();
     }
 
     private Location getDefaultLocation() {
@@ -85,15 +83,15 @@ public class TweetRepository {
         return mLocation;
     }
 
-    public Observable<Location> getLocation() {
-        return Observable.create(emitter -> {
-            if (!mLocationPermissionGranted) emitter.onNext(getDefaultLocation());
+    public Single<Location> getLocation() {
+        return Single.create(emitter -> {
+            if (!mLocationPermissionGranted) emitter.onSuccess(getDefaultLocation());
             else {
                 fusedLocationClient.getLastLocation()
                         .addOnSuccessListener(location -> {
                             Location currLoc = location != null ? location : getDefaultLocation();
                             try {
-                                emitter.onNext(currLoc);
+                                emitter.onSuccess(currLoc);
                             } catch (Exception e) {
                                 emitter.onError(e);
                             }

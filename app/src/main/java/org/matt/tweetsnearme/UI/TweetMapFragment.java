@@ -4,6 +4,7 @@ import android.content.Context;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +30,8 @@ import org.matt.tweetsnearme.ViewModel.TweetViewModel;
 import java.util.List;
 
 public class TweetMapFragment extends Fragment implements
-        OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
+        OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener,
+        GoogleMap.OnInfoWindowCloseListener, GoogleMap.OnMarkerClickListener {
 
 
     private static final String TAG = TweetMapFragment.class.getSimpleName();
@@ -37,6 +39,7 @@ public class TweetMapFragment extends Fragment implements
     private TweetMarkerAdapter tweetMarkerAdapter;
     private TweetViewModel mViewModel;
     private OnFragmentInteractionListener mListener;
+    private Marker marker;
 
     public TweetMapFragment() {
         // Required empty public constructor
@@ -45,7 +48,7 @@ public class TweetMapFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(TweetViewModel.class);
+        mViewModel = ViewModelProviders.of(getActivity()).get(TweetViewModel.class);
     }
 
     @Override
@@ -62,8 +65,6 @@ public class TweetMapFragment extends Fragment implements
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(TweetMapFragment.this);
-        mViewModel.getTweetList().observe(this, tweets -> addMapMarkers(tweets));
-        mViewModel.getCurrentLocation().observe(this, location -> setMapPosition(location));
     }
 
     @Override
@@ -73,25 +74,50 @@ public class TweetMapFragment extends Fragment implements
         mMap = googleMap;
         mMap.setInfoWindowAdapter(tweetMarkerAdapter);
         mMap.setOnInfoWindowClickListener(this);
+        mMap.setOnInfoWindowCloseListener(this);
+        mViewModel.getTweetList().observe(this, this::addMapMarkers);
+        mViewModel.getCurrentLocation().observe(this, this::setMapPosition);
     }
 
     private void setMapPosition(Location mLocation) {
-        LatLng mLatLng = new LatLng(mLocation.getLatitude(),
-                mLocation.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLatLng, 13));
+        LatLng mLatLng;
+        if (mLocation == null) {
+            mLatLng = new LatLng(0, 0);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLatLng, 0));
+        } else {
+            mLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLatLng, 13));
+        }
+
     }
 
     private void addMapMarkers(List<Tweet> tweets) {
         for (Tweet tweet : tweets) {
-            if (tweet.coordinates != null)
+            if (tweet.coordinates != null) {
                 mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(tweet.getCoordinates().getLatitude(), tweet.getCoordinates().getLongitude()))
                 ).setTag(tweet);
+                Log.d(TAG, "set tag");
+            }
         }
     }
 
     @Override
     public void onInfoWindowClick(Marker marker) {
+        Log.d(TAG, "onInfoWindowClick -> hide info window");
+        marker.hideInfoWindow();
+    }
+
+    @Override
+    public void onInfoWindowClose(Marker marker) {
+        Log.d(TAG, "onInfoWindowClose -> hide info window");
+
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Log.d(TAG, "onMarkerClick");
+        return true;
     }
 
     @Override

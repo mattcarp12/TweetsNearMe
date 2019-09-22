@@ -5,16 +5,12 @@ android {
     buildToolsVersion "29.0.1"
     defaultConfig {
         applicationId "org.matt.tweetsnearme"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "google_maps_key", (project.findProperty("GOOGLE_MAPS_API_KEY") ?: "")
-        resValue "string", "twitter_api_consumer_key", (project.findProperty("TWITTER_API_CONSUMER_KEY") ?: "")
-        resValue "string", "twitter_api_consumer_secret_key", (project.findProperty("TWITTER_API_CONSUMER_SECRET_KEY") ?: "")
-        resValue "string", "twitter_api_access_token", (project.findProperty("TWITTER_API_ACCESS_TOKEN") ?: "")
-        resValue "string", "twitter_api_access_token_secret", (project.findProperty("TWITTER_API_ACCESS_TOKEN_SECRET") ?: "")
     }
     buildTypes {
         release {
@@ -64,5 +60,13 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit2RxJava2AdapterVersion"
     implementation "androidx.room:room-rxjava2:$roomRxJavaVersion"
+
+    // Dagger
+    def daggerVersion = "2.24"
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+    implementation "com.google.dagger:dagger-android:$daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-android-processor:$daggerVersion"
 
 }

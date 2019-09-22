@@ -6,7 +6,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -18,8 +17,13 @@ import com.google.android.material.navigation.NavigationView;
 
 import org.matt.tweetsnearme.R;
 import org.matt.tweetsnearme.ViewModel.TweetViewModel;
+import org.matt.tweetsnearme.ViewModel.ViewModelProviderFactory;
 
-public class MainActivity extends AppCompatActivity
+import javax.inject.Inject;
+
+import dagger.android.support.DaggerAppCompatActivity;
+
+public class MainActivity extends DaggerAppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         TweetMapFragment.OnFragmentInteractionListener,
         TweetListFragment.OnFragmentInteractionListener {
@@ -27,6 +31,9 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = MainActivity.class.getSimpleName();
     TweetViewModel mViewModel;
     DrawerLayout drawer;
+
+    @Inject
+    ViewModelProviderFactory mViewModelProviderFactory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +53,10 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
-/*        mViewModel = ViewModelProvider.AndroidViewModelFactory
-                .getInstance(getApplication())
-                .create(TweetViewModel.class);*/
+        // Get instance of modelview
+        mViewModel = ViewModelProviders.of(this, mViewModelProviderFactory).get(TweetViewModel.class);
 
-        mViewModel = ViewModelProviders.of(this).get(TweetViewModel.class);
-
+        // Show map fragment first
         displaySelectedScreen(R.id.nav_tweet_map);
     }
 
@@ -71,7 +76,7 @@ public class MainActivity extends AppCompatActivity
                 return true;
 
             case R.id.action_refresh:
-                mViewModel.update();
+                mViewModel.update(true);
                 return true;
 
             default:

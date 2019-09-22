@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Credentials;
 import okhttp3.Interceptor;
@@ -57,12 +58,12 @@ public class TwitterService {
         else return twitterApi.postCredentials("client_credentials");
     }
 
-    public Observable<List<Tweet>> getTweets(Observable<Location> currLoc, int radius, int maxTweets) {
+    public Observable<List<Tweet>> getTweets(Single<Location> currLoc, int radius, int maxTweets) {
         return getToken()
                 .subscribeOn(Schedulers.io())
                 .flatMap(oAuthToken -> {
                     token = oAuthToken;
-                    return currLoc;
+                    return currLoc.toObservable();
                 })
                 .flatMap(location -> {
                     String geoCodeString = location.getLatitude() + "," +

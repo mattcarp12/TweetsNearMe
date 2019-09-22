@@ -12,6 +12,8 @@ import org.matt.tweetsnearme.Repository.TweetRepository;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class TweetViewModel extends AndroidViewModel {
 
     private static final String TAG = TweetViewModel.class.getSimpleName();
@@ -19,24 +21,24 @@ public class TweetViewModel extends AndroidViewModel {
     private LiveData<List<Tweet>> tweetList;
     private MutableLiveData<Location> currentLocation;
 
+    @Inject
     public TweetViewModel(Application application) {
         super(application);
         this.tweetRepository = new TweetRepository(application);
         tweetList = tweetRepository.getTweets();
         currentLocation = new MutableLiveData<>();
-        update();
+        update(false);
     }
 
     public LiveData<List<Tweet>> getTweetList() {
         return tweetList;
     }
 
-    private void updateTweetList() {
-        tweetRepository.refreshTweets();
+    public void updateTweetList(boolean forceUpdate) {
+        tweetRepository.refreshTweets(forceUpdate);
     }
 
     public MutableLiveData<Location> getCurrentLocation() {
-        updateCurrentLocation();
         return currentLocation;
     }
 
@@ -47,8 +49,8 @@ public class TweetViewModel extends AndroidViewModel {
                         e -> e.printStackTrace());
     }
 
-    public void update() {
+    public void update(boolean forceUpdate) {
         updateCurrentLocation();
-        updateTweetList();
+        updateTweetList(forceUpdate);
     }
 }

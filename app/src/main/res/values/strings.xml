@@ -20,12 +20,10 @@
     </string-array>
 
     <string name="app_name">TweetsNearMe</string>
-    <string name="title_activity_maps">Map</string>
     <string name="settings">Settings</string>
     <string name="refresh">Refresh</string>
     <string name="menu_tweet_map">Tweet Map</string>
     <string name="menu_tweet_list">Tweet List</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="title_activity_tweet_list">TweetList</string>
 </resources>

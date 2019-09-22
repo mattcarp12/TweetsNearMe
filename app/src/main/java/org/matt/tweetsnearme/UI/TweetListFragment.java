@@ -38,7 +38,7 @@ public class TweetListFragment extends Fragment {
          *   when the fragment is paused, stopped, resumed.
          * */
         super.onCreate(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(TweetViewModel.class);
+        mViewModel = ViewModelProviders.of(getActivity()).get(TweetViewModel.class);
         mAdapter = new TweetListAdapter(getContext());
     }
 

@@ -13,9 +13,10 @@
         android:layout_height="80dp"
         android:layout_marginTop="8dp"
         android:adjustViewBounds="true"
+        android:contentDescription="User profile photo"
         android:scaleType="fitXY"
+        app:srcCompat="@color/white"
         app:layout_constraintStart_toStartOf="parent"
-        android:src="@color/white"
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
@@ -40,8 +41,8 @@
             android:id="@+id/tweet_username"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
-            android:text="TextView"
+            android:paddingStart="10dp"
+            android:paddingEnd="0dp"
             app:layout_constraintEnd_toStartOf="@+id/tweet_distance"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -50,9 +51,9 @@
             android:id="@+id/tweet_distance"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="right"
-            android:paddingRight="20dp"
-            android:text="TextView"
+            android:gravity="end"
+            android:paddingStart="0dp"
+            android:paddingEnd="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tweet_username"
             app:layout_constraintTop_toTopOf="parent" />
@@ -64,7 +65,6 @@
             android:layout_height="0dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:text="TextView"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/tweet_distance"
             app:layout_constraintStart_toStartOf="@+id/tweet_username"
