@@ -1,6 +1,7 @@
 package org.matt.tweetsnearme.Network;
 
 
+import android.app.Application;
 import android.location.Location;
 
 import org.matt.tweetsnearme.Model.OAuthToken;
@@ -30,6 +31,10 @@ public class TwitterService {
     private static OAuthToken token;
 
     // TODO : Make methods to create OkHttpClient and TwitterApi
+
+    public TwitterService(Application application) {
+
+    }
 
     private static OkHttpClient okHttpClient = new OkHttpClient.Builder().addInterceptor(new Interceptor() {
         @Override
