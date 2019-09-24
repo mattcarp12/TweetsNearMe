@@ -12,5 +12,4 @@
 /build
 /captures
 .externalNativeBuild
-gradle.properties
-google_maps_api.xml
+apikeys.properties

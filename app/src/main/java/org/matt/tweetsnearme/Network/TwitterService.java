@@ -1,26 +1,18 @@
 package org.matt.tweetsnearme.Network;
 
-
-import android.app.Application;
 import android.location.Location;
 
 import org.matt.tweetsnearme.Model.OAuthToken;
 import org.matt.tweetsnearme.Model.Tweet;
 
-import java.io.IOException;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Credentials;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TwitterService {
 
@@ -30,32 +22,13 @@ public class TwitterService {
     private static final String credentials = Credentials.basic(TWITTER_API_CONSUMER_KEY, TWITTER_API_CONSUMER_SECRET_KEY);
     private static OAuthToken token;
 
-    // TODO : Make methods to create OkHttpClient and TwitterApi
+    private final TwitterApi twitterApi;
 
-    public TwitterService(Application application) {
+    @Inject
+    public TwitterService(TwitterApi twitterApi) {
+        this.twitterApi = twitterApi;
 
     }
-
-    private static OkHttpClient okHttpClient = new OkHttpClient.Builder().addInterceptor(new Interceptor() {
-        @Override
-        public okhttp3.Response intercept(Chain chain) throws IOException {
-            Request originalRequest = chain.request();
-            Request.Builder builder = originalRequest.newBuilder().header("Authorization",
-                    token != null ? token.getAuthorization() : credentials);
-            Request newRequest = builder.build();
-            return chain.proceed(newRequest);
-        }
-    })
-            .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-            .build();
-
-    private static TwitterApi twitterApi = new Retrofit.Builder()
-            .baseUrl(TwitterApi.BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
-            .create(TwitterApi.class);
 
     private Observable<OAuthToken> getToken() {
         // TODO : Refresh token if no longer valid
