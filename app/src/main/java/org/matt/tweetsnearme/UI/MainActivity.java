@@ -76,7 +76,7 @@ public class MainActivity extends DaggerAppCompatActivity
                 return true;
 
             case R.id.action_refresh:
-                mViewModel.update(true);
+                mViewModel.update();
                 return true;
 
             default:

@@ -27,19 +27,19 @@ public class TweetViewModel extends AndroidViewModel {
         this.tweetRepository = tweetRepository;
         tweetList = tweetRepository.getTweets();
         currentLocation = new MutableLiveData<>();
-        update(false);
+        update();
     }
 
     public LiveData<List<Tweet>> getTweetList() {
         return tweetList;
     }
 
-    public void updateTweetList(boolean forceUpdate) {
-        tweetRepository.refreshTweets(forceUpdate);
-    }
-
     public MutableLiveData<Location> getCurrentLocation() {
         return currentLocation;
+    }
+
+    private void updateTweetList() {
+        tweetRepository.refreshTweets();
     }
 
     private void updateCurrentLocation() {
@@ -49,8 +49,8 @@ public class TweetViewModel extends AndroidViewModel {
                         e -> e.printStackTrace());
     }
 
-    public void update(boolean forceUpdate) {
+    public void update() {
         updateCurrentLocation();
-        updateTweetList(forceUpdate);
+        updateTweetList();
     }
 }

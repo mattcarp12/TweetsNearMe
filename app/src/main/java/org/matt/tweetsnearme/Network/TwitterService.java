@@ -28,14 +28,14 @@ public class TwitterService {
         this.twitterApi = twitterApi;
     }
 
-    private Observable<OAuthToken> getToken(String credentials) {
+    private Observable<OAuthToken> getToken() {
         // TODO : Refresh token if no longer valid
         if (token != null) return Observable.just(token);
         else return twitterApi.postCredentials("client_credentials", credentials);
     }
 
     public Observable<List<Tweet>> getTweets(Single<Location> currLoc, int radius, int maxTweets) {
-        return getToken(credentials)
+        return getToken()
                 .subscribeOn(Schedulers.io())
                 .flatMap(oAuthToken -> {
                     token = oAuthToken;

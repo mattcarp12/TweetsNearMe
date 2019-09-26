@@ -1,7 +1,5 @@
 package org.matt.tweetsnearme.Network;
 
-//import com.twitter.sdk.android.core.models.Search;
-
 import org.matt.tweetsnearme.Model.OAuthToken;
 import org.matt.tweetsnearme.Model.Search;
 

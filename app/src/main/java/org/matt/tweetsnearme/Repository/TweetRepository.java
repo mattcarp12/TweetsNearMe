@@ -31,13 +31,12 @@ public class TweetRepository {
 
     private static final String TAG = TweetRepository.class.getSimpleName();
     private static final int FRESH_TIMEOUT_IN_MINUTES = 3;
-    private TweetDao tweetDao;
-    private TwitterService twitterService;
-    private Boolean mLocationPermissionGranted;
-    private FusedLocationProviderClient fusedLocationClient;
+    private final TweetDao tweetDao;
+    private final TwitterService twitterService;
+    private final Boolean mLocationPermissionGranted;
+    private final FusedLocationProviderClient fusedLocationClient;
+    private final Context context;
     private Date lastTweetUpdate;
-    private Context context;
-
 
     @Inject
     public TweetRepository(Application application, TwitterService twitterService) {
@@ -53,14 +52,8 @@ public class TweetRepository {
         return tweetDao.getTweets();
     }
 
-    public void refreshTweets(boolean forceRefresh) {
-        Date currDate = new Date();
-        if (lastTweetUpdate == null
-                || (currDate.getTime() - lastTweetUpdate.getTime()) / 60000 > FRESH_TIMEOUT_IN_MINUTES
-                || forceRefresh) {
-            refreshTweetDatabase();
-            lastTweetUpdate = currDate;
-        }
+    public void refreshTweets() {
+        refreshTweetDatabase();
     }
 
     private void refreshTweetDatabase() {
