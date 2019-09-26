@@ -1,8 +1,11 @@
 apply plugin: 'com.android.application'
+def apikeysPropertiesFile = rootProject.file("apikeys.properties")
+def apikeysProperties = new Properties()
+apikeysProperties.load(new FileInputStream(apikeysPropertiesFile))
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.1"
+    buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "org.matt.tweetsnearme"
         minSdkVersion 24
@@ -11,6 +14,8 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "google_maps_key", (project.findProperty("GOOGLE_MAPS_API_KEY") ?: "")
+        buildConfigField("String", "TWITTER_API_CONSUMER_KEY", apikeysProperties['TWITTER_API_CONSUMER_KEY'])
+        buildConfigField("String", "TWITTER_API_CONSUMER_SECRET_KEY", apikeysProperties['TWITTER_API_CONSUMER_SECRET_KEY'])
     }
     buildTypes {
         release {
@@ -26,7 +31,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.google.android.gms:play-services-maps:11.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'

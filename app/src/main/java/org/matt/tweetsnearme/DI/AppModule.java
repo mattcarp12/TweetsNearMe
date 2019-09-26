@@ -1,16 +1,16 @@
 package org.matt.tweetsnearme.DI;
 
-import org.matt.tweetsnearme.Network.TwitterApi;
+import android.app.Application;
 
-import java.io.IOException;
+import org.matt.tweetsnearme.Network.TwitterApi;
+import org.matt.tweetsnearme.Network.TwitterService;
+import org.matt.tweetsnearme.Repository.TweetRepository;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -21,9 +21,14 @@ public class AppModule {
 
     @Singleton
     @Provides
-    static OkHttpClient.Builder provideOkHttpClientBuilder() {
+    static OkHttpClient provideOkHttpClient() {
         return new OkHttpClient.Builder()
-                .addInterceptor(new Interceptor() {
+                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                .build();
+
+        /* Legacy implementation of authorization
+
+            .addInterceptor(new Interceptor() {
                     @Override
                     public okhttp3.Response intercept(Chain chain) throws IOException {
                         Request originalRequest = chain.request();
@@ -33,8 +38,7 @@ public class AppModule {
                         return chain.proceed(newRequest);
                     }
                 })
-                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-                .build();
+         */
     }
 
     @Singleton
@@ -52,6 +56,18 @@ public class AppModule {
     @Provides
     static TwitterApi provideTwitterApi(Retrofit retrofit) {
         return retrofit.create(TwitterApi.class);
+    }
+
+    @Singleton
+    @Provides
+    static TwitterService provideTwitterService(TwitterApi twitterApi) {
+        return new TwitterService(twitterApi);
+    }
+
+    @Singleton
+    @Provides
+    static TweetRepository provideTweetRepository(Application application, TwitterService twitterService) {
+        return new TweetRepository(application, twitterService);
     }
 
 }

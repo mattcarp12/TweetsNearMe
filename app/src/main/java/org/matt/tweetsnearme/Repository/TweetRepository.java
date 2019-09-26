@@ -20,6 +20,8 @@ import org.matt.tweetsnearme.Network.TwitterService;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
@@ -37,10 +39,11 @@ public class TweetRepository {
     private Context context;
 
 
-    public TweetRepository(Application application) {
+    @Inject
+    public TweetRepository(Application application, TwitterService twitterService) {
         this.context = application;
         this.tweetDao = TweetDatabase.getDatabase(application).tweetDao();
-        this.twitterService = new TwitterService();
+        this.twitterService = twitterService;
         this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(application);
         this.mLocationPermissionGranted = ContextCompat.checkSelfPermission(application,
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;

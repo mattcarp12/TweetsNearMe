@@ -22,9 +22,9 @@ public class TweetViewModel extends AndroidViewModel {
     private MutableLiveData<Location> currentLocation;
 
     @Inject
-    public TweetViewModel(Application application) {
+    public TweetViewModel(Application application, TweetRepository tweetRepository) {
         super(application);
-        this.tweetRepository = new TweetRepository(application);
+        this.tweetRepository = tweetRepository;
         tweetList = tweetRepository.getTweets();
         currentLocation = new MutableLiveData<>();
         update(false);
